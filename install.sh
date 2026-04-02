@@ -11,9 +11,15 @@
 # -> neovim
 # -> vim configs
 # -> vs-code
+# -> fonts
 # -> special kde setup
 # -> installing basic tools (something like a tui)
 ############################################################
+
+#########SOME SETTINGS#######################################
+# set default shell
+# set
+#############################################################
 ##
 
 #echo "Hello World"
