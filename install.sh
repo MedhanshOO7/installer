@@ -202,8 +202,13 @@ while true; do
             echo "$zsh_path" | sudo tee -a /etc/shells
         fi
 
-        if ! chsh -s "$zsh_path"; then
-            printf 'chsh failed — you may need to change shell manually\n'
+        set +e
+        chsh -s "$zsh_path"
+        chsh_status=$?
+        set -e
+
+        if [[ $chsh_status -ne 0 ]]; then
+            printf 'chsh failed — run manually: chsh -s %s\n' "$zsh_path"
         fi
 
         break
