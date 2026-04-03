@@ -29,10 +29,6 @@
 ###################################
 
 ####################PART-A###########################################
-# get the uname first and then `cat /etc/os-release`
-OS_VAR="$(uname)" #this variable will be either Linux or Darwin
-DISTRO=''
-PKG=''
 
 #shopts
 set -euo pipefail
@@ -41,6 +37,11 @@ PS4='\n[DEBUG] ${LINENO} :- '
 if [[ "${1:-}" == "--debug" ]]; then
     set -x
 fi
+
+# get the uname first and then `cat /etc/os-release`
+OS_VAR="$(uname)" #this variable will be either Linux or Darwin
+DISTRO=''
+PKG=''
 
 getDistro() {
     if [[ -r /etc/os-release ]]; then
@@ -93,12 +94,14 @@ fi
 
 ####################PART-B###########################################
 #Detect the correct pacakage manager
-if command -v pacman --noconfirm >/dev/null; then
-    PKG="pacman -S"
+if command -v pacman >/dev/null; then
+    PKG="pacman -S --noconfirm"
 elif command -v apt >/dev/null; then
     PKG="apt install -y"
 elif command -v dnf >/dev/null; then
     PKG="dnf install -y"
+elif [[ "$OS_VAR" == "Darwin" ]]; then
+    PKG="brew install"
 else
     echo "Unsupported system"
     exit 1
@@ -106,10 +109,22 @@ fi
 
 #printf 'package manager is %s\n' "$PKG"
 
-#########STEP-II#############################################
-# Based on the system i need to download the depending files
-#############################################################
+#📐 CHECK:- Detects os and the manager correctly
 
+#########STEP-II#########################################
+# Based on the system i need to download the dependencies
+#########################################################
+
+dependencies=(zsh git curl wget neovim fastfetch vim fzf tmux)
+
+for pkg_name in "${dependencies[@]}"; do
+    if ! eval "$PKG $pkg_name"; then
+        printf "Failed to install $pkg_name\n"
+    fi
+done
+
+#lets start with the zsh and it's dependencies
+# set it to default shell
 #########STEP-III###################
 # Place them on to the specific part
 ####################################
