@@ -94,15 +94,15 @@ fi
 #Detect the correct pacakage manager
 if command -v pacman >/dev/null; then
     PKG="pacman -S --noconfirm"
-    PKG base-devel
+    eval "$PKG base-devel"
 
 elif command -v apt >/dev/null; then
     PKG="apt install -y"
-    PKG build-essential
+    eval "$PKG build-essential"
 
 elif command -v dnf >/dev/null; then
     PKG="dnf install -y"
-    dnf groupinstall "Development Tools"
+    eval 'dnf groupinstall "Development Tools"'
 
 elif [[ "$OS_VAR" == "Darwin" ]]; then
     PKG="brew install"
@@ -176,13 +176,18 @@ while true; do
 done
 # set it to default shell
 while true; do
-    read -r "Do you want to set zsh as your default shell? [y/N] " toSet
+    read -r -p "Do you want to set zsh as your default shell? [y/N] " toSet
     case "${toSet,,}" in
     y | yes | "")
+        if ! command -v zsh >/dev/null; then
+            printf 'zsh is not installed, skipping...\n'
+            break
+        fi
+
         zsh_path="$(command -v zsh)"
 
         if ! grep -qF "$zsh_path" /etc/shells; then
-            printf 'Adding %s to /etc/shells\n' "$zsh_path"
+            printf 'adsding %s to /etc/shells\n' "$zsh_path"
             echo "$zsh_path" | sudo tee -a /etc/shells
         fi
 
@@ -192,6 +197,7 @@ while true; do
         ;;
     n | no)
         printf 'Skipping settinh zsh as default\n'
+        break
         ;;
     *)
         printf "Invalid input. Please enter y or n.\n"
