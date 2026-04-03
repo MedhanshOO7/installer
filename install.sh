@@ -70,9 +70,7 @@ brewInstalled() {
         printf 'Homebrew installation failed\n'
         return 1
     fi
-
     PKG="brew install"
-
 }
 
 if [[ "$OS_VAR" == "Darwin" ]]; then
@@ -96,10 +94,16 @@ fi
 #Detect the correct pacakage manager
 if command -v pacman >/dev/null; then
     PKG="pacman -S --noconfirm"
+    PKG base-devel
+
 elif command -v apt >/dev/null; then
     PKG="apt install -y"
+    PKG build-essential
+
 elif command -v dnf >/dev/null; then
     PKG="dnf install -y"
+    dnf groupinstall "Development Tools"
+
 elif [[ "$OS_VAR" == "Darwin" ]]; then
     PKG="brew install"
 else
@@ -115,16 +119,86 @@ fi
 # Based on the system i need to download the dependencies
 #########################################################
 
-dependencies=(zsh git curl wget neovim fastfetch vim fzf tmux)
+# Downloading basic things first
 
-for pkg_name in "${dependencies[@]}"; do
-    if ! eval "$PKG $pkg_name"; then
-        printf "Failed to install $pkg_name\n"
-    fi
-done
+declare -A deps
+
+deps[ubuntu]="git curl wget manpages manpages-dev libstdc++-docs"
+deps[fedora]="git curl wget man-pages man-pages-devel"
+deps[arch]="git curl wget man-pages man-db gcc-docs"
+deps[darwin]=''
+eval "$PKG ${deps[$DISTRO]}"
 
 #lets start with the zsh and it's dependencies
+# zsh dependencies
+
+while true; do
+    read -r -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice
+
+    case "${zsh_choice,,}" in
+    y | yes | "")
+        printf "Downloading zsh...\n"
+        eval "$PKG zsh"
+
+        ZSH_CUSTOM="${HOME}/.zsh"
+        mkdir -p "$ZSH_CUSTOM"
+
+        zsh_plugins=(
+            "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions"
+            "zsh-syntax-highlighting:https://github.com/zsh-users/zsh-syntax-highlighting"
+            "fzf-tab:https://github.com/Aloxaf/fzf-tab"
+            "powerlevel10k:https://github.com/romkatv/powerlevel10k"
+        )
+
+        for entry in "${zsh_plugins[@]}"; do
+            plugin="${entry%%:*}"
+            url="${entry#*:}"
+            target="$ZSH_CUSTOM/$plugin"
+
+            if [[ -d "$target" ]]; then
+                printf 'Updating %s...\n' "$plugin"
+                git -C "$target" pull
+            else
+                printf 'Cloning %s...\n' "$plugin"
+                git clone --depth=1 "$url" "$target"
+            fi
+        done
+        break
+        ;;
+    n | no)
+        printf "Skipping zsh installation.\n"
+        break
+        ;;
+    *)
+        printf "Invalid input. Please enter y or n.\n"
+        ;;
+    esac
+done
 # set it to default shell
+while true; do
+    read -r "Do you want to set zsh as your default shell? [y/N] " toSet
+    case "${toSet,,}" in
+    y | yes | "")
+        zsh_path="$(command -v zsh)"
+
+        if ! grep -qF "$zsh_path" /etc/shells; then
+            printf 'Adding %s to /etc/shells\n' "$zsh_path"
+            echo "$zsh_path" | sudo tee -a /etc/shells
+        fi
+
+        chsh -s "$zsh_path"
+
+        break
+        ;;
+    n | no)
+        printf 'Skipping settinh zsh as default\n'
+        ;;
+    *)
+        printf "Invalid input. Please enter y or n.\n"
+        ;;
+    esac
+done
+
 #########STEP-III###################
 # Place them on to the specific part
 ####################################
