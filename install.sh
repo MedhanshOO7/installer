@@ -36,7 +36,7 @@ PKG=''
 
 #shopts
 set -euo pipefail
-PS4='[DEBUG] ${BASH_SOURCE}:${LINENO}: '
+PS4='[DEBUG]'
 
 if [[ "${1:-}" == "--debug" ]]; then
     DEBUG=1
