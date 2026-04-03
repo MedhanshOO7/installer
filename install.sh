@@ -48,6 +48,31 @@ getDistro() {
         DISTRO="$ID"
     fi
 }
+brewInstalled() {
+    # approach
+    # if installed the good else install it
+    if command -v brew >/dev/null; then
+        printf 'Brew is insatlled\n'
+    else
+        printf 'Insatlling home brew from the official repo\n'
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        # add to path
+        if [[ -d /opt/homebrew/bin ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+    fi
+
+    if ! command -v brew >/dev/null; then
+        printf 'Homebrew installation failed\n'
+        return 1
+    fi
+
+    PKG="brew install"
+
+}
 
 if [[ "$OS_VAR" == "Darwin" ]]; then
     printf 'Detected OS is Darwin\n'
@@ -55,6 +80,7 @@ if [[ "$OS_VAR" == "Darwin" ]]; then
     #printf '%s\n' "$DISTRO"
 
     #check for the brew installation
+    brewInstalled
 
 elif [[ "$OS_VAR" == "Linux" ]]; then
     printf 'Detected OS is Linux...\n'
@@ -73,8 +99,6 @@ elif command -v apt >/dev/null; then
     PKG="apt install -y"
 elif command -v dnf >/dev/null; then
     PKG="dnf install -y"
-elif command -v brew >/dev/null; then
-    PKG="brew install"
 else
     echo "Unsupported system"
     exit 1
