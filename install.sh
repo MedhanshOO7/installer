@@ -104,16 +104,16 @@ fi
 updatePkgManager
 
 if command -v pacman >/dev/null; then
-    PKG="pacman -S --noconfirm"
+    PKG="sudo pacman -S --noconfirm"
     eval "$PKG base-devel"
 
 elif command -v apt >/dev/null; then
-    PKG="apt install -y"
+    PKG="sudo apt install -y"
     eval "$PKG build-essential"
 
 elif command -v dnf >/dev/null; then
-    PKG="dnf install -y"
-    eval 'dnf groupinstall -y "Development Tools"'
+    PKG="sudo dnf install -y"
+    eval 'sudo dnf groupinstall -y "Development Tools"'
 
 elif [[ "$OS_VAR" == "Darwin" ]]; then
     PKG="brew install"
@@ -135,10 +135,14 @@ fi
 declare -A deps
 
 deps[ubuntu]="git curl wget manpages manpages-dev "
+deps[debian]="${deps[ubuntu]}"
 deps[fedora]="git curl wget man-pages man-pages-devel"
 deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
-eval "$PKG ${deps[$DISTRO]}"
+
+if [[ -n "${deps[$DISTRO]:-}" ]]; then
+    eval "$PKG ${deps[$DISTRO]}"
+fi
 
 #lets start with the zsh and it's dependencies
 # zsh dependencies
@@ -150,8 +154,8 @@ while true; do
         break
     }
 
-    case "${zsh_choice,,}" in
-    y | yes)
+    case "$zsh_choice" in
+    [Yy] | [Yy][Ee][Ss])
         printf "Downloading zsh...\n"
         eval "$PKG zsh"
 
@@ -180,7 +184,7 @@ while true; do
         done
         break
         ;;
-    n | no)
+    [Nn] | [Nn][Oo] | "")
         printf "Skipping zsh installation.\n"
         break
         ;;
@@ -196,8 +200,8 @@ while true; do
         printf '\nNo input or timeout, skipping...\n'
         break
     }
-    case "${toSet,,}" in
-    y | yes | "")
+    case "$toSet" in
+    [Yy] | [Yy][Ee][Ss])
         if ! command -v zsh >/dev/null; then
             printf 'zsh is not installed, skipping...\n'
             break
@@ -221,7 +225,7 @@ while true; do
 
         break
         ;;
-    n | no)
+    [Nn] | [Nn][Oo] | "")
         printf 'Skipping settinh zsh as default\n'
         break
         ;;
