@@ -136,7 +136,7 @@ declare -A deps
 
 deps[ubuntu]="git curl wget manpages manpages-dev "
 deps[fedora]="git curl wget man-pages man-pages-devel"
-deps[arch]="git curl wget man-pages man-db gcc-docs"
+deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
 eval "$PKG ${deps[$DISTRO]}"
 
