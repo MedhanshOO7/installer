@@ -134,7 +134,7 @@ fi
 
 declare -A deps
 
-deps[ubuntu]="git curl wget manpages manpages-dev libstdc++-docs"
+deps[ubuntu]="git curl wget manpages manpages-dev "
 deps[fedora]="git curl wget man-pages man-pages-devel"
 deps[arch]="git curl wget man-pages man-db gcc-docs"
 deps[darwin]=''
