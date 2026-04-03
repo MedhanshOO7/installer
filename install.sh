@@ -59,7 +59,7 @@ fi
 ####################PART-B###########################################
 #Detect the correct pacakage manager
 if command -v pacman >/dev/null; then
-    PKG="pacman -S --noconfirm"
+    PKG="pacman -S"
 elif command -v apt >/dev/null; then
     PKG="apt install -y"
 elif command -v dnf >/dev/null; then
