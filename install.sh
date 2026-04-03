@@ -73,6 +73,15 @@ brewInstalled() {
     PKG="brew install"
 }
 
+updatePkgManager() {
+    case "$DISTRO" in
+    ubuntu | debian) sudo apt update ;;
+    fedora) sudo dnf check-update || true ;; # dnf returns exit 100 when updates exist, not an error
+    arch) sudo pacman -Sy ;;
+    darwin) brew update ;;
+    esac
+}
+
 if [[ "$OS_VAR" == "Darwin" ]]; then
     printf 'Detected OS is Darwin\n'
     DISTRO='darwin'
@@ -92,6 +101,8 @@ fi
 
 ####################PART-B###########################################
 #Detect the correct pacakage manager
+updatePkgManager
+
 if command -v pacman >/dev/null; then
     PKG="pacman -S --noconfirm"
     eval "$PKG base-devel"
