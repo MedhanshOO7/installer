@@ -33,8 +33,16 @@
 OS_VAR="$(uname)" #this variable will be either Linux or Darwin
 DISTRO=''
 PKG=''
+
 #shopts
 set -euo pipefail
+PS4='[DEBUG] ${BASH_SOURCE}:${LINENO}: '
+
+if [[ "${1:-}" == "--debug" ]]; then
+    DEBUG=1
+    set -x
+
+fi
 
 getDistro() {
     if [[ -r /etc/os-release ]]; then
@@ -45,12 +53,12 @@ getDistro() {
 if [[ "$OS_VAR" == "Darwin" ]]; then
     printf 'Detected OS is Darwin\n'
     DISTRO='Mac'
-    printf '%s\n' "$DISTRO"
+    #printf '%s\n' "$DISTRO"
 
 elif [[ "$OS_VAR" == "Linux" ]]; then
     printf 'Detected OS is Linux...\n'
     getDistro
-    printf '%s\n' "$DISTRO"
+    #printf '%s\n' "$DISTRO"
 
 fi
 
@@ -71,7 +79,7 @@ else
     exit 1
 fi
 
-printf 'package manager is %s\n' "$PKG"
+#printf 'package manager is %s\n' "$PKG"
 
 #########STEP-II#############################################
 # Based on the system i need to download the depending files
