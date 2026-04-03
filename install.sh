@@ -113,7 +113,7 @@ elif command -v apt >/dev/null; then
 
 elif command -v dnf >/dev/null; then
     PKG="dnf install -y"
-    eval 'dnf groupinstall "Development Tools"'
+    eval 'dnf groupinstall -y "Development Tools"'
 
 elif [[ "$OS_VAR" == "Darwin" ]]; then
     PKG="brew install"
