@@ -144,10 +144,14 @@ eval "$PKG ${deps[$DISTRO]}"
 # zsh dependencies
 
 while true; do
-    read -r -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice
+
+    read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
+        printf '\nNo input or timeout, skipping...\n'
+        break
+    }
 
     case "${zsh_choice,,}" in
-    y | yes | "")
+    y | yes)
         printf "Downloading zsh...\n"
         eval "$PKG zsh"
 
@@ -185,9 +189,13 @@ while true; do
         ;;
     esac
 done
+
 # set it to default shell
 while true; do
-    read -r -p "Do you want to set zsh as your default shell? [y/N] " toSet
+    read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
+        printf '\nNo input or timeout, skipping...\n'
+        break
+    }
     case "${toSet,,}" in
     y | yes | "")
         if ! command -v zsh >/dev/null; then
