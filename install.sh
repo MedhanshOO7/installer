@@ -1,4 +1,4 @@
-#!/usr/bin bash
+#!/usr/bin/env bash
 
 ############################################################
 #dotfiles i need to add to a system
@@ -36,24 +36,25 @@ PKG=''
 
 #shopts
 set -euo pipefail
-PS4='[DEBUG]'
+PS4='\n[DEBUG] ${LINENO} :- '
 
 if [[ "${1:-}" == "--debug" ]]; then
-    DEBUG=1
     set -x
-
 fi
 
 getDistro() {
     if [[ -r /etc/os-release ]]; then
-        DISTRO=$(grep -i '^NAME=' /etc/os-release | cut -d= -f2 | tr -d '"')
+        . /etc/os-release
+        DISTRO="$ID"
     fi
 }
 
 if [[ "$OS_VAR" == "Darwin" ]]; then
     printf 'Detected OS is Darwin\n'
-    DISTRO='Mac'
+    DISTRO='darwin'
     #printf '%s\n' "$DISTRO"
+
+    #check for the brew installation
 
 elif [[ "$OS_VAR" == "Linux" ]]; then
     printf 'Detected OS is Linux...\n'
@@ -66,7 +67,7 @@ fi
 
 ####################PART-B###########################################
 #Detect the correct pacakage manager
-if command -v pacman >/dev/null; then
+if command -v pacman --noconfirm >/dev/null; then
     PKG="pacman -S"
 elif command -v apt >/dev/null; then
     PKG="apt install -y"
