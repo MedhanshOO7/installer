@@ -28,10 +28,11 @@
 # Get information about the system
 ###################################
 
+####################PART-A###########################################
 # get the uname first and then `cat /etc/os-release`
 OS_VAR="$(uname)" #this variable will be either Linux or Darwin
 DISTRO=''
-
+PKG=''
 #shopts
 set -euo pipefail
 
@@ -54,6 +55,23 @@ elif [[ "$OS_VAR" == "Linux" ]]; then
 fi
 
 #📐 CHECK:- works on fedora arch ubuntu
+
+####################PART-B###########################################
+#Detect the correct pacakage manager
+if command -v pacman >/dev/null; then
+    PKG="pacman -S --noconfirm"
+elif command -v apt >/dev/null; then
+    PKG="apt install -y"
+elif command -v dnf >/dev/null; then
+    PKG="dnf install -y"
+elif command -v brew >/dev/null; then
+    PKG="brew install"
+else
+    echo "Unsupported system"
+    exit 1
+fi
+
+printf 'package manager is %s\n' "$PKG"
 
 #########STEP-II#############################################
 # Based on the system i need to download the depending files
