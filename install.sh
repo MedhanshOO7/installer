@@ -537,6 +537,33 @@ darwin)
     ;;
 esac
 
+#### NOW-EVERYTHING-IS-INSTALLED########
+###NOW-COPYING-THE-CONFIG-FILES#########
+
 #########STEP-III###################
 # Place them on to the specific part
+# NOw i like the chatgpt's logic of creating symlinks rather that going and copyonh fils
+# so we create a directory dotfiles
+# we create symlinks (i need to read about thoes first)
 ####################################
+# reusing the old assignment logic to execute the same
+
+#directory
+DOTFILES_DIR="${HOME}/.dotfiles"
+
+symlink() {
+    local src="$1"
+    local dst="$2"
+
+    # create parent directory if it doesn't exist
+    mkdir -p "$(dirname "$dst")"
+
+    # backup if exists and is not already a symlink
+    if [[ -e "$dst" && ! -L "$dst" ]]; then
+        mv "$dst" "${dst}.bak"
+        printf 'Backed up %s -> %s.bak\n' "$dst" "$dst"
+    fi
+
+    ln -sf "$src" "$dst"
+    printf 'Linked %s -> %s\n' "$src" "$dst"
+}
