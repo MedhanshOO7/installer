@@ -348,15 +348,9 @@ cli_ubuntu=(
     "fd-find"
     "btop"
     "fastfetch"
-    "starship"
     "zoxide"
     "aria2"
     "wl-clipboard"
-    "playerctl"
-    "brightnessctl"
-    "powertop"
-    "tlp"
-    "inotify-tools"
 )
 
 cli_fedora=(
@@ -367,11 +361,6 @@ cli_fedora=(
     "zoxide"
     "aria2"
     "wl-clipboard"
-    "playerctl"
-    "brightnessctl"
-    "powertop"
-    "tlp"
-    "inotify-tools"
 )
 
 cli_darwin=(
@@ -379,11 +368,9 @@ cli_darwin=(
     "fd"
     "btop"
     "fastfetch"
-    "starship"
     "zoxide"
     "glow"
     "tldr"
-    "go-yq"
     "aria2"
     "cmatrix"
     "cava"
@@ -415,16 +402,12 @@ gui_arch=(
 
 gui_ubuntu=(
     "kitty"
-    "alacritty"
     "firefox"
     "telegram-desktop"
     "obs-studio"
     "vlc"
     "mpv"
-    "inkscape"
     "flameshot"
-    "pavucontrol"
-    "virt-manager"
     "timeshift"
     "rofi"
 )
@@ -435,12 +418,6 @@ gui_fedora=(
     "firefox"
     "telegram-desktop"
     "obs-studio"
-    "vlc"
-    "mpv"
-    "inkscape"
-    "flameshot"
-    "pavucontrol"
-    "virt-manager"
     "rofi"
 )
 
@@ -448,9 +425,6 @@ gui_darwin=(
     "kitty"
     "obs"
     "vlc"
-    "mpv"
-    "inkscape"
-    "telegram"
     "firefox"
 )
 
