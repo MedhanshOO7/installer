@@ -135,7 +135,6 @@ printList() {
         printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
     done
 }
-
 installList() {
     local list_name="$1"
     local -n pkg_list="$list_name"
@@ -145,7 +144,7 @@ installList() {
         return
     fi
 
-    read -r -t 60 -p $'\neclude numbers or ENTEr for all: ' excludes || {
+    read -r -t 60 -p $'\nExclude numbers or Enter for all: ' excludes || {
         printf '\nno input, installing all......\n'
         excludes=""
     }
@@ -162,18 +161,18 @@ installList() {
             set +e
             eval "$PKG $pkg"
             pkg_status=$?
-            [[ $pkg_status -ne 0 ]] && printf 'failed: %s\n' "$pkg"
+            [[ $pkg_status -ne 0 ]] && printf 'Failed: %s\n' "$pkg"
             set -e
         else
-            printf 'Skiping %s\n' "$pkg"
+            printf 'Skipping %s\n' "$pkg"
         fi
     done
 }
 
 breakage() {
     printf '\n=============================\n'
-    printf 'packages will be installed.\n'
-    read -r -t 60 -p 'pres ENTEr to continue or Ctrl+c to exit.....' || true
+    printf 'Packages will be installed.\n'
+    read -r -t 60 -p 'Press ENTER to continue or Ctrl+C to exit.....' || true
     printf '\n'
 }
 
@@ -189,7 +188,9 @@ breakage() {
 
 declare -A deps
 
-deps[ubuntu]="git curl wget manpages manpages-dev "
+deps[ubuntu]="git curl wget manpages manpages-dev gpg"
+# "gpg" #this is required for eza to be installed on debian based sysntems
+
 deps[debian]="${deps[ubuntu]}"
 deps[fedora]="git curl wget man-pages"
 deps[arch]="git curl wget man-pages man-db"
@@ -254,6 +255,7 @@ while true; do
         fi
         break
         ;;
+
     [Nn] | [Nn][Oo] | "")
         printf "Skipping zsh installation.\n"
         break
@@ -266,6 +268,7 @@ done
 
 # set it to default shell
 while true; do
+
     read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
         printf '\nNo input or timeout, skipping...\n'
         break
@@ -296,7 +299,7 @@ while true; do
         break
         ;;
     [Nn] | [Nn][Oo] | "")
-        printf 'Skipping settinh zsh as default\n'
+        printf 'Skipping setting zsh as default\n'
         break
         ;;
     *)
@@ -324,12 +327,9 @@ cli_arch=(
     "fd"
     "btop"
     "fastfetch"
-    "starship"
     "zoxide"
     "glow"
     "tldr"
-    "yq"
-    "aria2"
     "tty-clock"
     "cmatrix"
     "cbonsai"
@@ -344,6 +344,7 @@ cli_arch=(
 
 cli_ubuntu=(
     "eza"
+    "snapd"
     "fd-find"
     "btop"
     "fastfetch"
@@ -390,7 +391,6 @@ cli_darwin=(
 
 gui_arch=(
     "kitty"
-    "alacritty"
     "obsidian"
     "visual-studio-code-bin"
     "brave-bin"
@@ -399,7 +399,6 @@ gui_arch=(
     "telegram-desktop"
     "obs-studio"
     "vlc"
-    "mpv"
     "kdenlive"
     "inkscape"
     "okular"
@@ -408,12 +407,9 @@ gui_arch=(
     "flameshot"
     "easyeffects"
     "pavucontrol"
-    "heroic-games-launcher-bin"
     "virt-manager"
-    "openrgb"
     "timeshift"
     "pdfarranger"
-    "mullvad-vpn"
     "rofi"
 )
 
@@ -496,6 +492,16 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
+installEZA(){
+    sudo mkdir -p /etc/apt/keyrings
+    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+    sudo apt update
+    sudo apt install -y eza
+}
+
+
 
 # call based on distro
 case "$DISTRO" in
@@ -520,6 +526,7 @@ ubuntu | debian)
     printList cli_common
     breakage
     installList cli_common
+    installEZA
 
     printList cli_ubuntu
     breakage
