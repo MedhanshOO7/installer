@@ -1,14 +1,45 @@
 #!/usr/bin/env bash
 
+############################################################
+#dotfiles i need to add to a system
+# -> before anything I do i need to install dependencies
+# -> zsh configs
+# -> kitty configs (Mac/linux)
+# -> fastfetch configs
+# -> obsidian configs
+# -> .p10k.zsh
+# -> neovim
+# -> vim configs
+# -> vs-code
+# -> fonts
+# -> special kde setup
+# -> installing basic tools (something like a tui)
+############################################################
+
+#########SOME SETTINGS#######################################
+# set default shell
+# set
+#############################################################
+##
+
+#echo "Hello World"
+
+#########STEP-I####################
+# Get information about the system
+###################################
+
+####################PART-A###########################################
+
+#shopts
 set -euo pipefail
-PS4='\n[DEBUG] line ${LINENO}: '
+PS4='\n[DEBUG] ${LINENO} :- '
 
-DEBUG=0
-DRY_RUN=0
-NON_INTERACTIVE=0
-AUTO_YES=0
+if [[ "${1:-}" == "--debug" ]]; then
+    set -x
+fi
 
-OS_NAME="$(uname -s)"
+# get the uname first and then `cat /etc/os-release`
+OS_VAR="$(uname)" #this variable will be either Linux or Darwin
 DISTRO=''
 PKG=''
 
@@ -91,6 +122,61 @@ else
     exit 1
 fi
 
+printList() {
+    local list_name="$1"
+    local -n pkg_list="$list_name"
+
+    if [[ ${#pkg_list[@]} -eq 0 ]]; then
+        return
+    fi
+
+    printf '\n###### %s #########\n' "$list_name"
+    for i in "${!pkg_list[@]}"; do
+        printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
+    done
+}
+
+installList() {
+    local list_name="$1"
+    local -n pkg_list="$list_name"
+
+    if [[ ${#pkg_list[@]} -eq 0 ]]; then
+        printf 'no packages in %s, skipping...\n' "$list_name"
+        return
+    fi
+
+    read -r -t 60 -p $'\neclude numbers or ENTEr for all: ' excludes || {
+        printf '\nno input, installing all......\n'
+        excludes=""
+    }
+
+    for i in "${!pkg_list[@]}"; do
+        pkg="${pkg_list[$i]}"
+        num=$((i + 1))
+        skip=0
+        for ex in $excludes; do
+            [[ "$ex" == "$num" ]] && skip=1 && break
+        done
+        if [[ $skip -eq 0 ]]; then
+            printf 'Installing %s...\n' "$pkg"
+            set +e
+            eval "$PKG $pkg"
+            pkg_status=$?
+            [[ $pkg_status -ne 0 ]] && printf 'failed: %s\n' "$pkg"
+            set -e
+        else
+            printf 'Skiping %s\n' "$pkg"
+        fi
+    done
+}
+
+breakage() {
+    printf '\n=============================\n'
+    printf 'packages will be installed.\n'
+    read -r -t 60 -p 'pres ENTEr to continue or Ctrl+c to exit.....' || true
+    printf '\n'
+}
+
 #printf 'package manager is %s\n' "$PKG"
 
 #📐 CHECK:- Detects os and the manager correctly
@@ -110,7 +196,9 @@ deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
 
 if [[ -n "${deps[$DISTRO]:-}" ]]; then
-    eval "$PKG ${deps[$DISTRO]}"
+    read -ra base_deps <<< "${deps[$DISTRO]}"
+    printList base_deps
+    installList base_deps
 fi
 
 #lets start with the zsh and it's dependencies
@@ -126,31 +214,44 @@ while true; do
     case "$zsh_choice" in
     [Yy] | [Yy][Ee][Ss])
         printf "Downloading zsh...\n"
+
         eval "$PKG zsh"
 
-        ZSH_CUSTOM="${HOME}/.zsh"
-        mkdir -p "$ZSH_CUSTOM"
+        if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
+            printf 'Installing oh-my-zsh...\n'
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        else
+            printf 'oh-my-zsh already installed\n'
+        fi
 
-        zsh_plugins=(
-            "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions"
-            "zsh-syntax-highlighting:https://github.com/zsh-users/zsh-syntax-highlighting"
-            "fzf-tab:https://github.com/Aloxaf/fzf-tab"
-            "powerlevel10k:https://github.com/romkatv/powerlevel10k"
-        )
+        # plugins
+        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
+            printf 'zsh-autosuggestions already installed, skipping...\n'
+        else
+            git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+                "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        fi
 
-        for entry in "${zsh_plugins[@]}"; do
-            plugin="${entry%%:*}"
-            url="${entry#*:}"
-            target="$ZSH_CUSTOM/$plugin"
+        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
+            printf 'zsh-syntax-highlighting already installed, skipping...\n'
+        else
+            git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+                "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        fi
 
-            if [[ -d "$target" ]]; then
-                printf 'Updating %s...\n' "$plugin"
-                git -C "$target" pull
-            else
-                printf 'Cloning %s...\n' "$plugin"
-                git clone --depth=1 "$url" "$target"
-            fi
-        done
+        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab" ]]; then
+            printf 'fzf-tab already installed, skipping...\n'
+        else
+            git clone --depth=1 https://github.com/Aloxaf/fzf-tab \
+                "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab"
+        fi
+
+        if [[ -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
+            printf 'powerlevel10k already installed, skipping...\n'
+        else
+            git clone --depth=1 https://github.com/romkatv/powerlevel10k \
+                "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
+        fi
         break
         ;;
     [Nn] | [Nn][Oo] | "")
@@ -291,7 +392,10 @@ gui_arch=(
     "kitty"
     "alacritty"
     "obsidian"
+    "visual-studio-code-bin"
+    "brave-bin"
     "firefox"
+    "zen-browser-bin"
     "telegram-desktop"
     "obs-studio"
     "vlc"
@@ -304,19 +408,13 @@ gui_arch=(
     "flameshot"
     "easyeffects"
     "pavucontrol"
+    "heroic-games-launcher-bin"
     "virt-manager"
     "openrgb"
     "timeshift"
     "pdfarranger"
-    "rofi"
-)
-
-arch_manual_apps=(
-    "visual-studio-code-bin"
-    "brave-bin"
-    "zen-browser-bin"
-    "heroic-games-launcher-bin"
     "mullvad-vpn"
+    "rofi"
 )
 
 gui_ubuntu=(
@@ -398,117 +496,81 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
-printList() {
-    local list_name="$1"
-    local -n pkg_list="$list_name"
-
-    if [[ ${#pkg_list[@]} -eq 0 ]]; then
-        return
-    fi
-
-    printf '\n###### %s #########\n' "$list_name"
-    for i in "${!pkg_list[@]}"; do
-        printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
-    done
-}
-
-installList() {
-    local list_name="$1"
-    local -n pkg_list="$list_name"
-
-    if [[ ${#pkg_list[@]} -eq 0 ]]; then
-        printf 'no packages in %s, skipping...\n' "$list_name"
-        return
-    fi
-
-    read -r -t 60 -p $'\neclude numbers or ENTEr for all: ' excludes || {
-        printf '\nno input, installing all......\n'
-        excludes=""
-    }
-
-    for i in "${!pkg_list[@]}"; do
-        pkg="${pkg_list[$i]}"
-        num=$((i + 1))
-        skip=0
-        for ex in $excludes; do
-            [[ "$ex" == "$num" ]] && skip=1 && break
-        done
-        if [[ $skip -eq 0 ]]; then
-            printf 'Installing %s...\n' "$pkg"
-            set +e
-            eval "$PKG $pkg"
-            pkg_status=$?
-            set -e
-            [[ $pkg_status -ne 0 ]] && printf 'failed: %s\n' "$pkg"
-        else
-            printf 'Skiping %s\n' "$pkg"
-        fi
-    done
-}
-
-breakage() {
-    printf '\n=============================\n'
-    printf 'packages will be installed.\n'
-    read -r -t 60 -p 'pres ENTEr to continue or Ctrl+c to exit.....' || true
-    printf '\n'
-}
 
 # call based on distro
-
 case "$DISTRO" in
 arch)
     printList cli_common
-    printList cli_arch
-    printList gui_arch
-    printList fonts_arch
-
     breakage
-
     installList cli_common
+
+    printList cli_arch
+    breakage
     installList cli_arch
+
+    printList gui_arch
+    breakage
     installList gui_arch
+
+    printList fonts_arch
+    breakage
     installList fonts_arch
     ;;
 ubuntu | debian)
     printList cli_common
-    printList cli_ubuntu
-    printList gui_ubuntu
-    printList fonts_ubuntu
-
     breakage
-
     installList cli_common
+
+    printList cli_ubuntu
+    breakage
     installList cli_ubuntu
+
+    printList gui_ubuntu
+    breakage
     installList gui_ubuntu
+
+    printList fonts_ubuntu
+    breakage
     installList fonts_ubuntu
     ;;
 fedora)
     printList cli_common
-    printList cli_fedora
-    printList gui_fedora
-    printList fonts_fedora
-
     breakage
-
     installList cli_common
+
+    printList cli_fedora
+    breakage
     installList cli_fedora
+
+    printList gui_fedora
+    breakage
     installList gui_fedora
+
+    printList fonts_fedora
+    breakage
     installList fonts_fedora
     ;;
 darwin)
     printList cli_common
-    printList cli_darwin
-    printList gui_darwin
-    printList fonts_darwin
-
     breakage
-
     installList cli_common
+
+    printList cli_darwin
+    breakage
     installList cli_darwin
+
+    printList gui_darwin
+    breakage
     installList gui_darwin
+
+    printList fonts_darwin
+    breakage
     installList fonts_darwin
     ;;
 esac
+
+printf 'Reached till here'
+
 #### NOW-EVERYTHING-IS-INSTALLED########
 ###NOW-COPYING-THE-CONFIG-FILES#########
 
@@ -522,7 +584,7 @@ esac
 
 #directory
 DOTFILES_DIR="${HOME}/.dotfiles"
-DOTFILES_REPO="https://github.com/MedhanshOO7/dotfiles/"
+DOTFILES_REPO="https://github.com/MedhanshOO7/dotfiles.git"
 
 # clone or update
 if [[ -d "$DOTFILES_DIR" ]]; then
@@ -541,29 +603,14 @@ fi
 symlink() {
     local src="$1"
     local dst="$2"
-    local backup_path=''
-    local current_target=''
 
-    if [[ ! -e "$src" && ! -L "$src" ]]; then
-        warn "Skipping $dst because the source does not exist: $src"
-        SKIPPED_LINKS+=("$dst")
-        return
-    fi
+    # create directory
+    mkdir -p "$(dirname "$dst")"
 
-    run_cmd mkdir -p "$(dirname "$dst")"
-
-    if [[ -L "$dst" ]]; then
-        current_target="$(readlink "$dst" 2>/dev/null || true)"
-        if [[ "$current_target" == "$src" ]]; then
-            info "Link already exists: $dst"
-            return
-        fi
-    fi
-
+    # backup if exists and is not already a symlink(chatgpt)
     if [[ -e "$dst" && ! -L "$dst" ]]; then
-        backup_path="${dst}.bak.$(date +%Y%m%d%H%M%S)"
-        info "Backing up $dst to $backup_path"
-        run_cmd mv "$dst" "$backup_path"
+        mv "$dst" "${dst}.bak"
+        printf 'baked up %s -> %s.bak\n' "$dst" "${dst}.bak"
     fi
 
     ln -sf "$src" "$dst"
@@ -574,6 +621,8 @@ symlink() {
 # Because i find it exhausting to map each and everythign
 
 # CLI tools
+symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
+symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
 symlink "$DOTFILES_DIR/.config/kitty" "${HOME}/.config/kitty"
 symlink "$DOTFILES_DIR/.config/nvim" "${HOME}/.config/nvim"
 symlink "$DOTFILES_DIR/.config/fastfetch" "${HOME}/.config/fastfetch"
