@@ -447,13 +447,13 @@ installList() {
     local list_name="$1"
     local -n pkg_list="$list_name"
 
-    printf '\n######### %s #########\n' "$list_name"
-    for i in "${!pkg_list[@]}"; do
-        printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
-    done
+    if [[ ${#pkg_list[@]} -eq 0 ]]; then
+        printf 'no packages in %s, skipping...\n' "$list_name"
+        return
+    fi
 
-    read -r -t 60 -p $'\nexclude numbers (space seprated)or ' excludes || {
-        printf '\nNo input, installing all...\n'
+    read -r -t 60 -p $'\neclude numbers or ENTEr for all: ' excludes || {
+        printf '\nno input, installing all......\n'
         excludes=""
     }
 
@@ -465,6 +465,7 @@ installList() {
             [[ "$ex" == "$num" ]] && skip=1 && break
         done
         if [[ $skip -eq 0 ]]; then
+            printf 'Installing %s...\n' "$pkg"
             set +e
             eval "$PKG $pkg"
             pkg_status=$?
@@ -474,7 +475,6 @@ installList() {
             printf 'Skiping %s\n' "$pkg"
         fi
     done
-
 }
 
 breakage() {
@@ -485,6 +485,7 @@ breakage() {
 }
 
 printList cli_common
+breakage
 installList cli_common
 
 # call based on distro
