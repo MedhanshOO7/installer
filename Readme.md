@@ -1,4 +1,4 @@
-# lazy-installer
+# cs's UNIX
 
 `lazy-installer` An interactive setup script for macOS, Arch Linux, Ubuntu or Debian, and Fedora. It installs common CLI tools, optional GUI apps and fonts, optional `zsh` plugins, and can symlink dotfiles from a directory you choose.
 
