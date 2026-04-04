@@ -8,44 +8,69 @@
 bash installer/install.sh
 ```
 
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash 
+```
+
 ## Useful options
 
-Preview the work without changing anything:
+- Preview the work without changing anything:
 
 ```bash
 bash installer/install.sh --dry-run
 ```
 
-Enable debug logging:
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --dry-run
+```
+
+- Enable debug logging:
 
 ```bash
 bash installer/install.sh --debug
 ```
 
-Use a custom dotfiles directory:
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
+```
+
+- Use a custom dotfiles directory:
 
 ```bash
 bash installer/install.sh --dotfiles-dir "$HOME/path/to/dotfiles"
 ```
 
-Run without prompts and use the safe defaults:
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
+  
+```
+
+- Run without prompts and use the safe defaults:
 
 ```bash
 bash installer/install.sh --non-interactive
 ```
 
-Accept every optional prompt automatically:
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
+```
+
+- Accept every optional prompt automatically:
 
 ```bash
 bash installer/install.sh --yes
 ```
 
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --yes
+```
+
 ## Remote execution
 
-If you publish the script at a raw URL, pass options after `-s --`:
+- If you publish the script at a raw URL, pass options after `-s --`:
 
 ```bash
-curl -fsSL <raw-script-url> | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --dry-run
 ```
 
 ## Notes
