@@ -136,7 +136,7 @@ declare -A deps
 
 deps[ubuntu]="git curl wget manpages manpages-dev "
 deps[debian]="${deps[ubuntu]}"
-deps[fedora]="git curl wget man-pages man-pages-devel"
+deps[fedora]="git curl wget man-pages"
 deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
 
@@ -477,6 +477,14 @@ installList() {
 
 }
 
+breakage() {
+    printf '\n=============================\n'
+    printf 'packages will be installed.\n'
+    read -r -t 60 -p 'pres ENTEr to continue or Ctrl+c to exit.....' || true
+    printf '\n'
+}
+
+printList cli_common
 installList cli_common
 
 # call based on distro
@@ -486,6 +494,9 @@ arch)
     printList cli_arch
     printList gui_arch
     printList fonts_arch
+
+    breakage
+
     installList cli_arch
     installList gui_arch
     installList fonts_arch
@@ -494,6 +505,9 @@ ubuntu | debian)
     printList cli_ubuntu
     printList gui_ubuntu
     printList fonts_ubuntu
+
+    breakage
+
     installList cli_ubuntu
     installList gui_ubuntu
     installList fonts_ubuntu
@@ -502,6 +516,9 @@ fedora)
     printList cli_fedora
     printList gui_fedora
     printList fonts_fedora
+
+    breakage
+
     installList cli_fedora
     installList gui_fedora
     installList fonts_fedora
@@ -510,6 +527,9 @@ darwin)
     printList cli_darwin
     printList gui_darwin
     printList fonts_darwin
+
+    breakage
+
     installList cli_darwin
     installList gui_darwin
     installList fonts_darwin
