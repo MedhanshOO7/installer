@@ -429,11 +429,25 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
+printList() {
+    local list_name="$1"
+    local -n pkg_list="$list_name"
+
+    if [[ ${#pkg_list[@]} -eq 0 ]]; then
+        return
+    fi
+
+    printf '\n###### %s #########\n' "$list_name"
+    for i in "${!pkg_list[@]}"; do
+        printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
+    done
+}
+
 installList() {
     local list_name="$1"
     local -n pkg_list="$list_name"
 
-    printf '\n=== %s ===\n' "$list_name"
+    printf '\n######### %s #########\n' "$list_name"
     for i in "${!pkg_list[@]}"; do
         printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
     done
@@ -469,21 +483,33 @@ installList cli_common
 
 case "$DISTRO" in
 arch)
+    printList cli_arch
+    printList gui_arch
+    printList fonts_arch
     installList cli_arch
     installList gui_arch
     installList fonts_arch
     ;;
 ubuntu | debian)
+    printList cli_ubuntu
+    printList gui_ubuntu
+    printList fonts_ubuntu
     installList cli_ubuntu
     installList gui_ubuntu
     installList fonts_ubuntu
     ;;
 fedora)
+    printList cli_fedora
+    printList gui_fedora
+    printList fonts_fedora
     installList cli_fedora
     installList gui_fedora
     installList fonts_fedora
     ;;
 darwin)
+    printList cli_darwin
+    printList gui_darwin
+    printList fonts_darwin
     installList cli_darwin
     installList gui_darwin
     installList fonts_darwin
