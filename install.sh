@@ -287,13 +287,18 @@ while true; do
             echo "$zsh_path" | sudo tee -a /etc/shells
         fi
 
+        target_user="${SUDO_USER:-$USER}"
+
         set +e
-        chsh -s "$zsh_path"
+        sudo chsh -s "$zsh_path" "$target_user"
         chsh_status=$?
         set -e
 
         if [[ $chsh_status -ne 0 ]]; then
-            printf 'chsh failed — run manually: chsh -s %s\n' "$zsh_path"
+            printf 'chsh failed — run manually: sudo chsh -s %s %s\n' "$zsh_path" "$target_user"
+        else
+            printf 'Successfully set default shell to zsh for %s.\n' "$target_user"
+            printf 'NOTE: You must log out and log back in (or restart your terminal) for this to take effect.\n'
         fi
 
         break
@@ -474,8 +479,6 @@ installEZA(){
     sudo apt update
     sudo apt install -y eza
 }
-
-
 
 # call based on distro
 case "$DISTRO" in
