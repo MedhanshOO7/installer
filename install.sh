@@ -234,6 +234,261 @@ while true; do
         ;;
     esac
 done
+#####################ZSH AND PLUGINS ARE DONE#########
+
+cli_common=(
+    "neovim"
+    "vim"
+    "tmux"
+    "fzf"
+    "git"
+    "curl"
+    "wget"
+    "ripgrep"
+    "bat"
+    "htop"
+    "ffmpeg"
+    "yt-dlp"
+)
+# format → "name:arch_pkg:ubuntu_pkg:fedora_pkg:brew_pkg"
+
+cli_arch=(
+    "eza"
+    "fd"
+    "btop"
+    "fastfetch"
+    "starship"
+    "zoxide"
+    "glow"
+    "tldr"
+    "yq"
+    "aria2"
+    "tty-clock"
+    "cmatrix"
+    "cbonsai"
+    "cava"
+    "wl-clipboard"
+    "playerctl"
+    "brightnessctl"
+    "powertop"
+    "tlp"
+    "inotify-tools"
+)
+
+cli_ubuntu=(
+    "eza"
+    "fd-find"
+    "btop"
+    "fastfetch"
+    "starship"
+    "zoxide"
+    "aria2"
+    "wl-clipboard"
+    "playerctl"
+    "brightnessctl"
+    "powertop"
+    "tlp"
+    "inotify-tools"
+)
+
+cli_fedora=(
+    "eza"
+    "fd-find"
+    "btop"
+    "fastfetch"
+    "zoxide"
+    "aria2"
+    "wl-clipboard"
+    "playerctl"
+    "brightnessctl"
+    "powertop"
+    "tlp"
+    "inotify-tools"
+)
+
+cli_darwin=(
+    "eza"
+    "fd"
+    "btop"
+    "fastfetch"
+    "starship"
+    "zoxide"
+    "glow"
+    "tldr"
+    "go-yq"
+    "aria2"
+    "cmatrix"
+    "cava"
+)
+
+gui_arch=(
+    "kitty"
+    "alacritty"
+    "obsidian"
+    "visual-studio-code-bin"
+    "brave-bin"
+    "firefox"
+    "zen-browser-bin"
+    "telegram-desktop"
+    "obs-studio"
+    "vlc"
+    "mpv"
+    "kdenlive"
+    "inkscape"
+    "okular"
+    "gwenview"
+    "spectacle"
+    "flameshot"
+    "easyeffects"
+    "pavucontrol"
+    "heroic-games-launcher-bin"
+    "virt-manager"
+    "openrgb"
+    "timeshift"
+    "pdfarranger"
+    "mullvad-vpn"
+    "rofi"
+)
+
+gui_ubuntu=(
+    "kitty"
+    "alacritty"
+    "firefox"
+    "telegram-desktop"
+    "obs-studio"
+    "vlc"
+    "mpv"
+    "inkscape"
+    "flameshot"
+    "pavucontrol"
+    "virt-manager"
+    "timeshift"
+    "rofi"
+)
+
+gui_fedora=(
+    "kitty"
+    "alacritty"
+    "firefox"
+    "telegram-desktop"
+    "obs-studio"
+    "vlc"
+    "mpv"
+    "inkscape"
+    "flameshot"
+    "pavucontrol"
+    "virt-manager"
+    "rofi"
+)
+
+gui_darwin=(
+    "kitty"
+    "obs"
+    "vlc"
+    "mpv"
+    "inkscape"
+    "telegram"
+    "firefox"
+)
+
+fonts_arch=(
+    "ttf-jetbrains-mono-nerd"
+    "ttf-firacode-nerd"
+    "ttf-hack-nerd"
+    "ttf-meslo-nerd"
+    "ttf-cascadia-code-nerd"
+    "ttf-ubuntu-nerd"
+    "ttf-roboto"
+    "noto-fonts"
+    "noto-fonts-emoji"
+    "ttf-twemoji"
+)
+
+fonts_ubuntu=(
+    "fonts-jetbrains-mono"
+    "fonts-firacode"
+    "fonts-hack"
+    "fonts-roboto"
+    "fonts-noto"
+    "fonts-noto-color-emoji"
+)
+
+fonts_fedora=(
+    "jetbrains-mono-fonts"
+    "fira-code-fonts"
+    "hack-fonts"
+    "google-roboto-fonts"
+    "google-noto-fonts-common"
+    "google-noto-emoji-color-fonts"
+)
+
+fonts_darwin=(
+    "font-jetbrains-mono-nerd-font"
+    "font-fira-code-nerd-font"
+    "font-hack-nerd-font"
+    "font-meslo-lg-nerd-font"
+)
+
+installList() {
+    local list_name="$1"
+    local -n pkg_list="$list_name"
+
+    printf '\n=== %s ===\n' "$list_name"
+    for i in "${!pkg_list[@]}"; do
+        printf '  [%d] %s\n' "$((i + 1))" "${pkg_list[$i]}"
+    done
+
+    read -r -t 60 -p $'\nexclude numbers (space seprated)or ' excludes || {
+        printf '\nNo input, installing all...\n'
+        excludes=""
+    }
+
+    for i in "${!pkg_list[@]}"; do
+        pkg="${pkg_list[$i]}"
+        num=$((i + 1))
+        skip=0
+        for ex in $excludes; do
+            [[ "$ex" == "$num" ]] && skip=1 && break
+        done
+        if [[ $skip -eq 0 ]]; then
+            set +e
+            eval "$PKG $pkg"
+            pkg_status=$?
+            set -e
+            [[ $pkg_status -ne 0 ]] && printf 'failed: %s\n' "$pkg"
+        else
+            printf 'Skiping %s\n' "$pkg"
+        fi
+    done
+
+}
+
+installList cli_common
+
+# call based on distro
+
+case "$DISTRO" in
+arch)
+    installList cli_arch
+    installList gui_arch
+    installList fonts_arch
+    ;;
+ubuntu | debian)
+    installList cli_ubuntu
+    installList gui_ubuntu
+    installList fonts_ubuntu
+    ;;
+fedora)
+    installList cli_fedora
+    installList gui_fedora
+    installList fonts_fedora
+    ;;
+darwin)
+    installList cli_darwin
+    installList gui_darwin
+    installList fonts_darwin
+    ;;
+esac
 
 #########STEP-III###################
 # Place them on to the specific part
