@@ -590,7 +590,7 @@ symlink "$DOTFILES_DIR/.config/VSCodium/User/settings.json" "${HOME}/.config/VSC
 symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
 
 # kde — only on linux
-if [[ "$OS_VAR" == "Linux" && $XDG_CURRENT_DESKTOP == "KDE" ]]; then
+if [[ "$OS_VAR" == "Linux" && "$XDG_CURRENT_DESKTOP" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
     symlink "$DOTFILES_DIR/.config/Kvantum" "${HOME}/.config/Kvantum"
     symlink "$DOTFILES_DIR/.config/dolphinrc" "${HOME}/.config/dolphinrc"
     symlink "$DOTFILES_DIR/.config/kdeglobals" "${HOME}/.config/kdeglobals"
