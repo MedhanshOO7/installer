@@ -555,15 +555,15 @@ symlink() {
     local src="$1"
     local dst="$2"
 
-    # create parent directory if it doesn't exist
+    # create directory
     mkdir -p "$(dirname "$dst")"
 
-    # backup if exists and is not already a symlink
+    # backup if exists and is not already a symlink(chatgpt)
     if [[ -e "$dst" && ! -L "$dst" ]]; then
         mv "$dst" "${dst}.bak"
-        printf 'Backed up %s -> %s.bak\n' "$dst" "$dst"
+        printf 'backed up %s -> %s.bak\n' "$dst" "$dst"
     fi
 
     ln -sf "$src" "$dst"
-    printf 'Linked %s -> %s\n' "$src" "$dst"
+    printf 'linked %s -> %s\n' "$src" "$dst"
 }
