@@ -484,59 +484,62 @@ breakage() {
     printf '\n'
 }
 
-printList cli_common
-breakage
-installList cli_common
-
 # call based on distro
 
 case "$DISTRO" in
 arch)
+    printList cli_common
     printList cli_arch
     printList gui_arch
     printList fonts_arch
 
     breakage
 
+    installList cli_common
     installList cli_arch
     installList gui_arch
     installList fonts_arch
     ;;
 ubuntu | debian)
+    printList cli_common
     printList cli_ubuntu
     printList gui_ubuntu
     printList fonts_ubuntu
 
     breakage
 
+    installList cli_common
     installList cli_ubuntu
     installList gui_ubuntu
     installList fonts_ubuntu
     ;;
 fedora)
+    printList cli_common
     printList cli_fedora
     printList gui_fedora
     printList fonts_fedora
 
     breakage
 
+    installList cli_common
     installList cli_fedora
     installList gui_fedora
     installList fonts_fedora
     ;;
 darwin)
+    printList cli_common
     printList cli_darwin
     printList gui_darwin
     printList fonts_darwin
 
     breakage
 
+    installList cli_common
     installList cli_darwin
     installList gui_darwin
     installList fonts_darwin
     ;;
 esac
-
 #### NOW-EVERYTHING-IS-INSTALLED########
 ###NOW-COPYING-THE-CONFIG-FILES#########
 
@@ -550,6 +553,21 @@ esac
 
 #directory
 DOTFILES_DIR="${HOME}/.dotfiles"
+DOTFILES_REPO="https://github.com/MedhanshOO7/dotfiles/"
+
+# clone or update
+if [[ -d "$DOTFILES_DIR" ]]; then
+    printf 'Dotfiles already exist, pulling latest...\n'
+    git -C "$DOTFILES_DIR" pull
+else
+    printf 'Cloning dotfiles...\n'
+    git clone --depth=1 "$DOTFILES_REPO" "$DOTFILES_DIR"
+fi
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+    printf 'Failed to clone dotfiles, exiting...\n'
+    exit 1
+fi
 
 symlink() {
     local src="$1"
@@ -561,7 +579,7 @@ symlink() {
     # backup if exists and is not already a symlink(chatgpt)
     if [[ -e "$dst" && ! -L "$dst" ]]; then
         mv "$dst" "${dst}.bak"
-        printf 'backed up %s -> %s.bak\n' "$dst" "$dst"
+        printf 'baked up %s -> %s.bak\n' "$dst" "${dst}.bak"
     fi
 
     ln -sf "$src" "$dst"
@@ -605,4 +623,4 @@ if [[ "$OS_VAR" == "Linux" && "$XDG_CURRENT_DESKTOP" =~ [Kk][Dd][Ee]|[Pp]lasma ]
     symlink "$DOTFILES_DIR/.local/share/kwin/scripts" "${HOME}/.local/share/kwin/scripts"
 fi
 
-printf '\nAll symlinks created.\n'
+printf '\nall symlinks created.\n'
