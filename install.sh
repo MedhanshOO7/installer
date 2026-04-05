@@ -28,6 +28,11 @@
 # Get information about the system
 ###################################
 
+#shopts
+set -euo pipefail
+PS4='\n[DEBUG] ${LINENO} :- '
+
+
 ####################PART-A###########################################
 #Ascii art (Generated using my c program)
 
@@ -53,10 +58,6 @@ cat << 'EOF'
 │                                                      │
 └──────────────────────────────────────────────────────┘
 EOF
-
-#shopts
-set -euo pipefail
-PS4='\n[DEBUG] ${LINENO} :- '
 
 if [[ "${1:-}" == "--debug" ]]; then
     set -x
@@ -125,8 +126,6 @@ fi
 
 ####################PART-B###########################################
 #Detect the correct pacakage manager
-updatePkgManager
-
 if command -v pacman >/dev/null; then
     PKG="sudo pacman -S --noconfirm"
     eval "$PKG base-devel"
@@ -145,6 +144,8 @@ else
     echo "Unsupported system"
     exit 1
 fi
+
+updatePkgManager
 
 printList() {
     local list_name="$1"
@@ -629,6 +630,7 @@ symlink() {
 # Because i find it exhausting to map each and everythign
 # .p10k.zsh
 # CLI tools
+#zsh
 symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
 symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
 symlink "$DOTFILES_DIR/.p10k.zsh" "${HOME}/.p10k.zsh"
@@ -650,9 +652,6 @@ symlink "$DOTFILES_DIR/.config/Code/User/settings.json" "${HOME}/.config/Code/Us
 symlink "$DOTFILES_DIR/.config/Code/User/keybindings.json" "${HOME}/.config/Code/User/keybindings.json"
 symlink "$DOTFILES_DIR/.config/VSCodium/User/settings.json" "${HOME}/.config/VSCodium/User/settings.json"
 
-# zsh
-symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
-
 # kde — only on linux
 if [[ "$OS_VAR" == "Linux" && "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
     symlink "$DOTFILES_DIR/.config/Kvantum" "${HOME}/.config/Kvantum"
@@ -669,4 +668,4 @@ if [[ "$OS_VAR" == "Linux" && "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]las
     symlink "$DOTFILES_DIR/.local/share/kwin/scripts" "${HOME}/.local/share/kwin/scripts"
 fi
 
-printf '\nall symlinks created.\n'
+printf '\All the dotfiles and the tools are setup.....\n'
