@@ -1,3 +1,4 @@
+```text
 ┌──────────────────────────────────────────────────────┐
 │                                                      │
 │   ██████╗ ███████╗                                   │
@@ -18,7 +19,7 @@
 │                                  — medAnshOO7        │
 │                                                      │
 └──────────────────────────────────────────────────────┘
-
+```
 # cs's UNIX
 my personal *dotfiles and system* setup — built to get any machine feeling like home as fast as possible. one script, batteries included.
 
