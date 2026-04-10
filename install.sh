@@ -129,6 +129,7 @@ fi
 if command -v pacman >/dev/null; then
     PKG="sudo pacman -S --noconfirm"
     eval "$PKG base-devel"
+    yay
 
 elif command -v apt >/dev/null; then
     PKG="sudo apt install -y"
@@ -221,6 +222,7 @@ deps[fedora]="git curl wget man-pages"
 deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
 
+#installing the base pacakges based on the distro choice 
 if [[ -n "${deps[$DISTRO]:-}" ]]; then
     read -ra base_deps <<< "${deps[$DISTRO]}"
     printList base_deps
@@ -229,7 +231,6 @@ fi
 
 #lets start with the zsh and it's dependencies
 # zsh dependencies
-
 while true; do
 
     read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
@@ -496,13 +497,34 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
-installEZA(){
+ubuntuEza(){
     sudo mkdir -p /etc/apt/keyrings
     wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/gierens.gpg
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
     sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
     sudo apt update
     sudo apt install -y eza
+}
+
+install_yay() {
+    if command -v yay &> /dev/null; then
+        printf '[✓] yay already installed\n'
+        return
+    fi
+
+    printf '[→] Installing yay (AUR helper)...\n'
+
+    tmp_dir=$(mktemp -d)
+
+    git clone https://aur.archlinux.org/yay.git "$tmp_dir/yay"
+    cd "$tmp_dir/yay" || exit
+
+    makepkg -si --noconfirm
+
+    cd ~ || exit
+    rm -rf "$tmp_dir"
+
+    printf '[✓] yay is installed\n'
 }
 
 # call based on distro
@@ -515,6 +537,7 @@ arch)
     printList cli_arch
     breakage
     installList cli_arch
+    install_yay
 
     printList gui_arch
     breakage
@@ -528,7 +551,7 @@ ubuntu | debian)
     printList cli_common
     breakage
     installList cli_common
-    installEZA
+    ubuntuEza
 
     printList cli_ubuntu
     breakage
