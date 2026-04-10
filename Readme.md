@@ -71,7 +71,7 @@ bash installer/install.sh
 ```
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash 
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh| bash 
 ```
 
 ## Useful options
