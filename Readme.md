@@ -16,7 +16,7 @@
                         │                ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝         │
                         │                                                      │
                         │                      dotfiles & system config        │
-                        │                                  — medAnshOO7        │
+                        │                                  — medhAnshOO7       │
                         │                                                      │
                         └──────────────────────────────────────────────────────┘
 ```
@@ -55,7 +55,7 @@ make sure nstall
 make sure **git** and **curl** are installed first
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh 
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh"
 ```
 the script will:
 
