@@ -524,7 +524,7 @@ install_yay() {
     cd ~ || exit
     rm -rf "$tmp_dir"
 
-    printf '[✓] yay is installed\n'
+    printf '[✓] yay installed\n'
 }
 
 # call based on distro
@@ -654,41 +654,74 @@ symlink() {
 # .p10k.zsh
 # CLI tools
 #zsh
-symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
-symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
-symlink "$DOTFILES_DIR/.p10k.zsh" "${HOME}/.p10k.zsh"
 
-symlink "$DOTFILES_DIR/.vimrc" "${HOME}/.vimrc"
-symlink "$DOTFILES_DIR/.vim" "${HOME}/.vim"
+##Implementing the new approach
 
-symlink "$DOTFILES_DIR/.config/kitty" "${HOME}/.config/kitty"
-symlink "$DOTFILES_DIR/.config/nvim" "${HOME}/.config/nvim"
-symlink "$DOTFILES_DIR/.config/fastfetch" "${HOME}/.config/fastfetch"
-symlink "$DOTFILES_DIR/.fastfetch" "${HOME}/.fastfetch"
-symlink "$DOTFILES_DIR/.config/cava" "${HOME}/.config/cava"
-symlink "$DOTFILES_DIR/.config/htop" "${HOME}/.config/htop"
-symlink "$DOTFILES_DIR/.config/bashtop" "${HOME}/.config/bashtop"
-symlink "$DOTFILES_DIR/.config/rofi" "${HOME}/.config/rofi"
+configs=()
 
-# vscode / vscodium
-symlink "$DOTFILES_DIR/.config/Code/User/settings.json" "${HOME}/.config/Code/User/settings.json"
-symlink "$DOTFILES_DIR/.config/Code/User/keybindings.json" "${HOME}/.config/Code/User/keybindings.json"
-symlink "$DOTFILES_DIR/.config/VSCodium/User/settings.json" "${HOME}/.config/VSCodium/User/settings.json"
+#Filling up the configs to copy
+## top-level dotfiles
+for item in "$DOTFILES_DIR"/.[^.]*; do
+    name=$(basename "$item")
 
-# kde — only on linux
-if [[ "$OS_VAR" == "Linux" && "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
-    symlink "$DOTFILES_DIR/.config/Kvantum" "${HOME}/.config/Kvantum"
-    symlink "$DOTFILES_DIR/.config/dolphinrc" "${HOME}/.config/dolphinrc"
-    symlink "$DOTFILES_DIR/.config/kdeglobals" "${HOME}/.config/kdeglobals"
-    symlink "$DOTFILES_DIR/.config/kglobalshortcutsrc" "${HOME}/.config/kglobalshortcutsrc"
-    symlink "$DOTFILES_DIR/.config/konsolerc" "${HOME}/.config/konsolerc"
-    symlink "$DOTFILES_DIR/.config/kwinrc" "${HOME}/.config/kwinrc"
-    symlink "$DOTFILES_DIR/.config/kwinrulesrc" "${HOME}/.config/kwinrulesrc"
-    symlink "$DOTFILES_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" \
-        "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
-    symlink "$DOTFILES_DIR/.config/plasmashellrc" "${HOME}/.config/plasmashellrc"
-    symlink "$DOTFILES_DIR/.config/systemsettingsrc" "${HOME}/.config/systemsettingsrc"
-    symlink "$DOTFILES_DIR/.local/share/kwin/scripts" "${HOME}/.local/share/kwin/scripts"
-fi
+    [[ "$name" == ".config" ]] && continue
+    [[ "$name" == ".git" ]] && continue
+    [[ "$name" == ".gitignore" ]] && continue
 
-printf '\All the dotfiles and the tools are setup.....\n'
+    configs+=("${name#.}")
+done
+
+# Contents of .config
+for item in "$DOTFILES_DIR"/.config/*; do
+    name=$(basename "$item")
+
+    case "$name" in
+        hypr|kdeglobals|kglobalshortcutsrc|konsolerc|Kvantum|kwinrc|kwinrulesrc|plasma-org.kde.plasma.desktop-appletsrc|plasmashellrc|systemsettingsrc)
+            continue
+            ;;
+    esac
+
+    configs+=("$name")
+done
+
+
+
+
+# symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
+# symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
+# symlink "$DOTFILES_DIR/.p10k.zsh" "${HOME}/.p10k.zsh"
+#
+# symlink "$DOTFILES_DIR/.vimrc" "${HOME}/.vimrc"
+# symlink "$DOTFILES_DIR/.vim" "${HOME}/.vim"
+#
+# symlink "$DOTFILES_DIR/.config/kitty" "${HOME}/.config/kitty"
+# symlink "$DOTFILES_DIR/.config/nvim" "${HOME}/.config/nvim"
+# symlink "$DOTFILES_DIR/.config/fastfetch" "${HOME}/.config/fastfetch"
+# symlink "$DOTFILES_DIR/.fastfetch" "${HOME}/.fastfetch"
+# symlink "$DOTFILES_DIR/.config/cava" "${HOME}/.config/cava"
+# symlink "$DOTFILES_DIR/.config/htop" "${HOME}/.config/htop"
+# symlink "$DOTFILES_DIR/.config/bashtop" "${HOME}/.config/bashtop"
+# symlink "$DOTFILES_DIR/.config/rofi" "${HOME}/.config/rofi"
+#
+# # vscode / vscodium
+# symlink "$DOTFILES_DIR/.config/Code/User/settings.json" "${HOME}/.config/Code/User/settings.json"
+# symlink "$DOTFILES_DIR/.config/Code/User/keybindings.json" "${HOME}/.config/Code/User/keybindings.json"
+# symlink "$DOTFILES_DIR/.config/VSCodium/User/settings.json" "${HOME}/.config/VSCodium/User/settings.json"
+#
+# # kde — only on linux
+# if [[ "$OS_VAR" == "Linux" && "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
+#     symlink "$DOTFILES_DIR/.config/Kvantum" "${HOME}/.config/Kvantum"
+#     symlink "$DOTFILES_DIR/.config/dolphinrc" "${HOME}/.config/dolphinrc"
+#     symlink "$DOTFILES_DIR/.config/kdeglobals" "${HOME}/.config/kdeglobals"
+#     symlink "$DOTFILES_DIR/.config/kglobalshortcutsrc" "${HOME}/.config/kglobalshortcutsrc"
+#     symlink "$DOTFILES_DIR/.config/konsolerc" "${HOME}/.config/konsolerc"
+#     symlink "$DOTFILES_DIR/.config/kwinrc" "${HOME}/.config/kwinrc"
+#     symlink "$DOTFILES_DIR/.config/kwinrulesrc" "${HOME}/.config/kwinrulesrc"
+#     symlink "$DOTFILES_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" \
+#         "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+#     symlink "$DOTFILES_DIR/.config/plasmashellrc" "${HOME}/.config/plasmashellrc"
+#     symlink "$DOTFILES_DIR/.config/systemsettingsrc" "${HOME}/.config/systemsettingsrc"
+#     symlink "$DOTFILES_DIR/.local/share/kwin/scripts" "${HOME}/.local/share/kwin/scripts"
+# fi
+#
+# printf '\All the dotfiles and the tools are setup.....\n'
