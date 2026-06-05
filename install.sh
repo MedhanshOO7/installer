@@ -684,7 +684,30 @@ for item in "$DOTFILES_DIR"/.config/*; do
     configs+=("$name")
 done
 
+#Printing them 
+for i in "${!configs[@]}"; do
+    printf "%2d) %s\n" "$((i + 1))" "${configs[i]}"
+done
 
+# read 
+read -rp "Select configs (space-separated): " -a choices
+
+backup_if_exists() {
+    local target="$1"
+
+    if [[ -e "$target" || -L "$target" ]]; then
+        local timestamp
+        timestamp=$(date +%Y%m%d-%H%M%S)
+
+        local backup="${target}.${timestamp}.backup"
+
+        echo "Backing up:"
+        echo "  $target"
+        echo "→ $backup"
+
+        mv "$target" "$backup"
+    fi
+}
 
 
 # symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
