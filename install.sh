@@ -746,17 +746,16 @@ configSetup() {
     done
 
     if [[ $INSTALL_ALL -eq 1 ]]; then
-        choices=()
-        for i in "${!configs[@]}"; do
-            choices+=("$((i + 1))")
-        done
+        excludes_configs=""
     else
         # read
-        read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices || {
+        read -rp "Select configs to EXCLUDE (1,2,3... or Enter for none)>_ " excludes_configs || {
             local rc=$?
             if [[ $rc -eq 130 ]]; then
                 printf '\nUser interrupted, skipping configs...\n'
-                choices=()
+                excludes_configs="all"
+            else
+                excludes_configs=""
             fi
         }
     fi
@@ -794,12 +793,22 @@ install_item() {
 }
 
 installAll() {
-    for choice in "${choices[@]}"; do
-        src="${configs[$((choice - 1))]}"
-
-        [[ -e "$src" ]] || continue
-
-        install_item "$src"
+    if [[ "$excludes_configs" == "all" ]]; then
+        return
+    fi
+    for i in "${!configs[@]}"; do
+        num=$((i + 1))
+        skip=0
+        for ex in $excludes_configs; do
+            [[ "$ex" == "$num" ]] && skip=1 && break
+        done
+        if [[ $skip -eq 0 ]]; then
+            src="${configs[$i]}"
+            [[ -e "$src" ]] || continue
+            install_item "$src"
+        else
+            printf 'Skipping config: %s\n' "$(basename "${configs[$i]}")"
+        fi
     done
 }
 installAll
