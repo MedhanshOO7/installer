@@ -840,4 +840,4 @@ installAll
 #     symlink "$DOTFILES_DIR/.local/share/kwin/scripts" "${HOME}/.local/share/kwin/scripts"
 # fi
 #
-# printf '\All the dotfiles and the tools are setup.....\n'
+# printf '\nAll the dotfiles and the tools are setup.....\n'
