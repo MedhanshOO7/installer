@@ -43,14 +43,12 @@ this exists so i can skip all that and just start building.
 
 - **CLI tools** — neovim, vim, tmux, fzf, ripgrep, bat, eza, btop, fastfetch, zoxide, glow, tldr and more
 - **shell** — zsh + oh-my-zsh, powerlevel10k, autosuggestions, syntax highlighting, fzf-tab
-- **GUI apps (linux only)** — kitty, obsidian, brave, firefox, zen browser, telegram, obs, vlc, kdenlive, rofi and more
+- **GUI apps** — kitty, obsidian, brave, firefox, zen browser, telegram, obs, vlc, kdenlive, rofi and more
 - **fonts** — JetBrains Mono, FiraCode, Hack, Meslo, Cascadia Code (all nerd font variants)
 - **KDE extras** — kvantum, konsole, kwin rules, plasma config (auto-detected, only runs on KDE)
 
 
 # install
-
-make sure nstall
 
 make sure **git** and **curl** are installed first
 
@@ -60,9 +58,9 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/ma
 the script will:
 
 - detect your OS and distro automatically
-- ask before installing each group of packages (you can exclude things you don't want)
+- ask before installing each group of packages (you can exclude things you don't want, or press `Ctrl+C` to skip a step)
 - clone my dotfiles repo
-- check out all config files directly into $HOME and curl are installed first
+- symlink config files directly into $HOME
 
 ## Run locally
 
@@ -84,4 +82,16 @@ bash installer/install.sh --debug
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
+```
+
+- Automate installation (bypass interactive prompts):
+
+```bash
+bash installer/install.sh --all
+# or
+bash installer/install.sh -a
+```
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --all
 ```
