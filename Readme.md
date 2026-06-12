@@ -35,7 +35,7 @@ I got tired of spending the first few hours on any new machine just getting my e
 
 ---
 
-## 💻 Supported Systems
+## Supported Systems
 
 | Distro | Status |
 | :--- | :--- |
