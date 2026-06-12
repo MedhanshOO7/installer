@@ -32,11 +32,10 @@
 set -euo pipefail
 PS4='\n[DEBUG] ${LINENO} :- '
 
-
 ####################PART-A###########################################
 #Ascii art (Generated using my c program)
 
-cat << 'EOF'
+cat <<'EOF'
 ┌──────────────────────────────────────────────────────┐
 │                                                      │
 │   ██████╗ ███████╗                                   │
@@ -100,10 +99,10 @@ brewInstalled() {
 
 updatePkgManager() {
     case "$DISTRO" in
-    ubuntu | debian) sudo apt update ;;
-    fedora) sudo dnf check-update || true ;; # dnf returns exit 100 when updates exist, not an error
-    arch) sudo pacman -Sy ;;
-    darwin) brew update ;;
+        ubuntu | debian) sudo apt update ;;
+        fedora) sudo dnf check-update || true ;; # dnf returns exit 100 when updates exist, not an error
+        arch) sudo pacman -Sy ;;
+        darwin) brew update ;;
     esac
 }
 
@@ -221,122 +220,128 @@ deps[fedora]="git curl wget man-pages"
 deps[arch]="git curl wget man-pages man-db"
 deps[darwin]=''
 
-#installing the base pacakges based on the distro choice 
+#installing the base pacakges based on the distro choice
 if [[ -n "${deps[$DISTRO]:-}" ]]; then
-    read -ra base_deps <<< "${deps[$DISTRO]}"
+    read -ra base_deps <<<"${deps[$DISTRO]}"
     printList base_deps
     installList base_deps
 fi
 
 #lets start with the zsh and it's dependencies
 # zsh dependencies
-while true; do
+zshInstall() {
+    while true; do
 
-    read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
-        printf '\nNo input or timeout, skipping...\n'
-        break
-    }
+        read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
+            printf '\nNo input or timeout, skipping...\n'
+            break
+        }
 
-    case "$zsh_choice" in
-    [Yy] | [Yy][Ee][Ss])
-        printf "Downloading zsh...\n"
+        case "$zsh_choice" in
+            [Yy] | [Yy][Ee][Ss])
+                printf "Downloading zsh...\n"
 
-        eval "$PKG zsh"
+                eval "$PKG zsh"
 
-        if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
-            printf 'Installing oh-my-zsh...\n'
-            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        else
-            printf 'oh-my-zsh already installed\n'
-        fi
+                if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
+                    printf 'Installing oh-my-zsh...\n'
+                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+                else
+                    printf 'oh-my-zsh already installed\n'
+                fi
 
-        # plugins
-        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
-            printf 'zsh-autosuggestions already installed, skipping...\n'
-        else
-            git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
-                "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-        fi
+                # plugins
+                if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
+                    printf 'zsh-autosuggestions already installed, skipping...\n'
+                else
+                    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+                        "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+                fi
 
-        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
-            printf 'zsh-syntax-highlighting already installed, skipping...\n'
-        else
-            git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
-                "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-        fi
+                if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
+                    printf 'zsh-syntax-highlighting already installed, skipping...\n'
+                else
+                    git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+                        "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+                fi
 
-        if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab" ]]; then
-            printf 'fzf-tab already installed, skipping...\n'
-        else
-            git clone --depth=1 https://github.com/Aloxaf/fzf-tab \
-                "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab"
-        fi
+                if [[ -d "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab" ]]; then
+                    printf 'fzf-tab already installed, skipping...\n'
+                else
+                    git clone --depth=1 https://github.com/Aloxaf/fzf-tab \
+                        "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab"
+                fi
 
-        if [[ -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
-            printf 'powerlevel10k already installed, skipping...\n'
-        else
-            git clone --depth=1 https://github.com/romkatv/powerlevel10k \
-                "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
-        fi
-        break
-        ;;
+                if [[ -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
+                    printf 'powerlevel10k already installed, skipping...\n'
+                else
+                    git clone --depth=1 https://github.com/romkatv/powerlevel10k \
+                        "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
+                fi
+                break
+                ;;
 
-    [Nn] | [Nn][Oo] | "")
-        printf "Skipping zsh installation.\n"
-        break
-        ;;
-    *)
-        printf "Invalid input. Please enter y or n.\n"
-        ;;
-    esac
-done
+            [Nn] | [Nn][Oo] | "")
+                printf "Skipping zsh installation.\n"
+                break
+                ;;
+            *)
+                printf "Invalid input. Please enter y or n.\n"
+                ;;
+        esac
+    done
+}
+zshInstall
 
 # set it to default shell
-while true; do
+zshDefault() {
+    while true; do
 
-    read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
-        printf '\nNo input or timeout, skipping...\n'
-        break
-    }
-    case "$toSet" in
-    [Yy] | [Yy][Ee][Ss])
-        if ! command -v zsh >/dev/null; then
-            printf 'zsh is not installed, skipping...\n'
+        read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
+            printf '\nNo input or timeout, skipping...\n'
             break
-        fi
+        }
+        case "$toSet" in
+            [Yy] | [Yy][Ee][Ss])
+                if ! command -v zsh >/dev/null; then
+                    printf 'zsh is not installed, skipping...\n'
+                    break
+                fi
 
-        zsh_path="$(command -v zsh)"
+                zsh_path="$(command -v zsh)"
 
-        if ! grep -qF "$zsh_path" /etc/shells; then
-            printf 'adsding %s to /etc/shells\n' "$zsh_path"
-            echo "$zsh_path" | sudo tee -a /etc/shells
-        fi
+                if ! grep -qF "$zsh_path" /etc/shells; then
+                    printf 'adsding %s to /etc/shells\n' "$zsh_path"
+                    echo "$zsh_path" | sudo tee -a /etc/shells
+                fi
 
-        target_user="${SUDO_USER:-$USER}"
+                target_user="${SUDO_USER:-$USER}"
 
-        set +e
-        sudo chsh -s "$zsh_path" "$target_user"
-        chsh_status=$?
-        set -e
+                set +e
+                sudo chsh -s "$zsh_path" "$target_user"
+                chsh_status=$?
+                set -e
 
-        if [[ $chsh_status -ne 0 ]]; then
-            printf 'chsh failed — run manually: sudo chsh -s %s %s\n' "$zsh_path" "$target_user"
-        else
-            printf 'Successfully set default shell to zsh for %s.\n' "$target_user"
-            printf 'NOTE: You must log out and log back in (or restart your terminal) for this to take effect.\n'
-        fi
+                if [[ $chsh_status -ne 0 ]]; then
+                    printf 'chsh failed — run manually: sudo chsh -s %s %s\n' "$zsh_path" "$target_user"
+                else
+                    printf 'Successfully set default shell to zsh for %s.\n' "$target_user"
+                    printf 'NOTE: You must log out and log back in (or restart your terminal) for this to take effect.\n'
+                fi
 
-        break
-        ;;
-    [Nn] | [Nn][Oo] | "")
-        printf 'Skipping setting zsh as default\n'
-        break
-        ;;
-    *)
-        printf "Invalid input. Please enter y or n.\n"
-        ;;
-    esac
-done
+                break
+                ;;
+            [Nn] | [Nn][Oo] | "")
+                printf 'Skipping setting zsh as default\n'
+                break
+                ;;
+            *)
+                printf "Invalid input. Please enter y or n.\n"
+                ;;
+        esac
+    done
+}
+zshDefault
 #####################ZSH AND PLUGINS ARE DONE#########
 
 cli_common=(
@@ -392,7 +397,7 @@ cli_fedora=(
     "fd-find"
     "btop"
     "fastfetch"
-    "neovim" 
+    "neovim"
     "python3-neovim"
     "zoxide"
     "aria2"
@@ -502,7 +507,7 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
-ubuntuEza(){
+ubuntuEza() {
     sudo mkdir -p /etc/apt/keyrings
     wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/gierens.gpg
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
@@ -512,7 +517,7 @@ ubuntuEza(){
 }
 
 install_yay() {
-    if command -v yay &> /dev/null; then
+    if command -v yay &>/dev/null; then
         printf '[✓] yay already installed\n'
         return
     fi
@@ -534,79 +539,79 @@ install_yay() {
 
 # call based on distro
 case "$DISTRO" in
-arch)
-    printList cli_common
-    breakage
-    installList cli_common
+    arch)
+        printList cli_common
+        breakage
+        installList cli_common
 
-    printList cli_arch
-    breakage
-    installList cli_arch
-    install_yay
+        printList cli_arch
+        breakage
+        installList cli_arch
+        install_yay
 
-    printList gui_arch
-    breakage
-    installList gui_arch
+        printList gui_arch
+        breakage
+        installList gui_arch
 
-    printList fonts_arch
-    breakage
-    installList fonts_arch
-    ;;
-ubuntu | debian)
-    printList cli_common
-    breakage
-    installList cli_common
-    ubuntuEza
+        printList fonts_arch
+        breakage
+        installList fonts_arch
+        ;;
+    ubuntu | debian)
+        printList cli_common
+        breakage
+        installList cli_common
+        ubuntuEza
 
-    printList cli_ubuntu
-    breakage
-    installList cli_ubuntu
+        printList cli_ubuntu
+        breakage
+        installList cli_ubuntu
 
-    printList gui_ubuntu
-    breakage
-    installList gui_ubuntu
+        printList gui_ubuntu
+        breakage
+        installList gui_ubuntu
 
-    printList fonts_ubuntu
-    breakage
-    installList fonts_ubuntu
-    ;;
-fedora)
-    printList cli_common
-    breakage
-    installList cli_common
+        printList fonts_ubuntu
+        breakage
+        installList fonts_ubuntu
+        ;;
+    fedora)
+        printList cli_common
+        breakage
+        installList cli_common
 
-    printList cli_fedora
-    breakage
-    installList cli_fedora
+        printList cli_fedora
+        breakage
+        installList cli_fedora
 
-    printList gui_fedora
-    breakage
-    installList gui_fedora
+        printList gui_fedora
+        breakage
+        installList gui_fedora
 
-    printList fonts_fedora
-    breakage
-    installList fonts_fedora
-    ;;
-darwin)
-    printList cli_common
-    breakage
-    installList cli_common
+        printList fonts_fedora
+        breakage
+        installList fonts_fedora
+        ;;
+    darwin)
+        printList cli_common
+        breakage
+        installList cli_common
 
-    printList cli_darwin
-    breakage
-    installList cli_darwin
+        printList cli_darwin
+        breakage
+        installList cli_darwin
 
-    printList gui_darwin
-    breakage
-    installList gui_darwin
+        printList gui_darwin
+        breakage
+        installList gui_darwin
 
-    printList fonts_darwin
-    breakage
-    installList fonts_darwin
-    ;;
+        printList fonts_darwin
+        breakage
+        installList fonts_darwin
+        ;;
 esac
 
-printf 'Reached till here'
+# printf 'Reached till here'
 
 #### NOW-EVERYTHING-IS-INSTALLED########
 ###NOW-COPYING-THE-CONFIG-FILES#########
@@ -681,7 +686,7 @@ for item in "$DOTFILES_DIR"/.config/*; do
     name=$(basename "$item")
 
     case "$name" in
-        hypr|kdeglobals|kglobalshortcutsrc|konsolerc|Kvantum|kwinrc|kwinrulesrc|plasma-org.kde.plasma.desktop-appletsrc|plasmashellrc|systemsettingsrc)
+        hypr | kdeglobals | kglobalshortcutsrc | konsolerc | Kvantum | kwinrc | kwinrulesrc | plasma-org.kde.plasma.desktop-appletsrc | plasmashellrc | systemsettingsrc)
             continue
             ;;
     esac
@@ -689,14 +694,14 @@ for item in "$DOTFILES_DIR"/.config/*; do
     configs+=("$item")
 done
 
-#Printing them 
+#Printing them
 for i in "${!configs[@]}"; do
     printf "%2d) %s\n" \
         "$((i + 1))" \
         "$(basename "${configs[i]}")"
 done
 
-# read 
+# read
 read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
 
 backup_if_exists() {
