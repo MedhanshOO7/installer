@@ -16,82 +16,86 @@
                         │                ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝         │
                         │                                                      │
                         │                      dotfiles & system config        │
-                        │                                  — medhAnshOO7       │
+                        │                                  — medAnshOO7        │
                         │                                                      │
                         └──────────────────────────────────────────────────────┘
 ```
-# cs's UNIX
-my personal *dotfiles and system* setup — built to get any machine feeling like home as fast as possible. one script, batteries included.
 
-# what's this?
-this is everything i use day to day — shell config, editor setup, fonts, CLI tools, GUI apps, the whole thing. clone it on a fresh machine, run the script, grab a coffee, done.
-managed with a git repo so files live directly in $HOME with no extra tooling needed.
+# medAnshOO7's UNIX Setup
 
-# why?
-i got tired of spending the first few hours on any new machine just getting my environment to feel right before i could write a single line of code. tweaking fonts, reinstalling plugins, copy-pasting configs from old machines — exhausting.
-this exists so i can skip all that and just start building.
+My personal *dotfiles and system* setup — built to get any machine feeling like home as fast as possible. One script, batteries included.
 
-# supported systems
-|distro |status|
-|:--|:--|
-|arch linux + derivatives (manjaro, endeavourOS etc.)|✅ fully supported| 
-|ubuntu / debian + derivatives |✅ supported |
-|fedora + derivatives|✅ supported|
-|macOS |✅ supported|
+## 📌 Overview
 
-# what gets installed
+**What's this?**  
+This is everything I use day-to-day: shell config, editor setup, fonts, CLI tools, GUI apps, the whole thing. Clone it on a fresh machine, run the script, grab a coffee, done. It is managed with a git repo so files live directly in `$HOME` with no extra tooling needed.
 
-- **CLI tools** — neovim, vim, tmux, fzf, ripgrep, bat, eza, btop, fastfetch, zoxide, glow, tldr and more
-- **shell** — zsh + oh-my-zsh, powerlevel10k, autosuggestions, syntax highlighting, fzf-tab
-- **GUI apps** — kitty, obsidian, brave, firefox, zen browser, telegram, obs, vlc, kdenlive, rofi and more
-- **fonts** — JetBrains Mono, FiraCode, Hack, Meslo, Cascadia Code (all nerd font variants)
-- **KDE extras** — kvantum, konsole, kwin rules, plasma config (auto-detected, only runs on KDE)
+**Why?**  
+I got tired of spending the first few hours on any new machine just getting my environment to feel right before I could write a single line of code. Tweaking fonts, reinstalling plugins, copy-pasting configs from old machines — exhausting. This exists so I can skip all that and just start building.
 
+---
 
-# install
+## 💻 Supported Systems
 
-make sure **git** and **curl** are installed first
+| Distro | Status |
+| :--- | :--- |
+| **Arch Linux** + derivatives (Manjaro, EndeavourOS, etc.) | ✅ Fully supported | 
+| **Ubuntu / Debian** + derivatives | ✅ Supported |
+| **Fedora** + derivatives | ✅ Supported |
+| **macOS** | ✅ Supported |
+
+---
+
+## 📦 What Gets Installed
+
+- **CLI Tools:** `neovim`, `vim`, `tmux`, `fzf`, `ripgrep`, `bat`, `eza`, `btop`, `fastfetch`, `zoxide`, `glow`, `tldr`, and more.
+- **Shell:** `zsh` + `oh-my-zsh`, `powerlevel10k`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf-tab`.
+- **GUI Apps:** `kitty`, `obsidian`, `brave`, `firefox`, `zen browser`, `telegram`, `obs`, `vlc`, `kdenlive`, `rofi`, and more.
+- **Fonts:** JetBrains Mono, FiraCode, Hack, Meslo, Cascadia Code (all Nerd Font variants).
+- **KDE Extras:** Kvantum, Konsole, KWin rules, Plasma config (auto-detected, only runs on KDE).
+
+---
+
+## 🚀 Installation
+
+⚠️ **Prerequisites:** Make sure **`git`** and **`curl`** are installed on your system before proceeding.
+
+### 1. One-Line Install
+
+You can install directly from GitHub using the following command:
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh)"
 ```
-the script will:
 
-- detect your OS and distro automatically
-- ask before installing each group of packages (you can exclude things you don't want, or press `Ctrl+C` to skip a step)
-- clone my dotfiles repo
-- symlink config files directly into $HOME
+**The script will:**
+- Detect your OS and distro automatically.
+- Ask before installing each group of packages (you can exclude things you don't want).
+- Clone the dotfiles repository.
+- Symlink all config files directly into your `$HOME` directory.
 
-## Run locally
+### 2. Run Locally
+
+If you prefer to clone the repository and run it locally:
 
 ```bash
+# Execute the downloaded script
 bash installer/install.sh
+
+# Or pipe it directly
+curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash 
 ```
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh| bash 
-```
+---
 
-## Useful options
+## ⚙️ Useful Options
 
-- Enable debug logging:
+You can append options to the script to modify its behavior:
 
-```bash
-bash installer/install.sh --debug
-```
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
-```
-
-- Automate installation (bypass interactive prompts):
-
-```bash
-bash installer/install.sh --all
-# or
-bash installer/install.sh -a
-```
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --all
-```
+- **Enable debug logging:**
+  ```bash
+  bash installer/install.sh --debug
+  
+  # Or via curl:
+  curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
+  ```
