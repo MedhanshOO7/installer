@@ -141,15 +141,15 @@ fi
 #Detect the correct pacakage manager
 if command -v pacman >/dev/null; then
     PKG="sudo pacman -S --noconfirm"
-    eval "$PKG base-devel"
+    # base-devel moved to deps
 
 elif command -v apt >/dev/null; then
     PKG="sudo apt install -y"
-    eval "$PKG build-essential"
+    # build-essential moved to deps
 
 elif command -v dnf >/dev/null; then
     PKG="sudo dnf install -y"
-    eval 'sudo dnf groupinstall -y "Development Tools"'
+    # Development Tools moved to fedoraBase function
 
 elif [[ "$OS_VAR" == "Darwin" ]]; then
     PKG="brew install"
@@ -237,12 +237,12 @@ breakage() {
 
 declare -A deps
 
-deps[ubuntu]="git curl wget manpages manpages-dev gpg"
+deps[ubuntu]="build-essential git curl wget manpages manpages-dev gpg"
 # "gpg" #this is required for eza to be installed on debian based sysntems
 
 deps[debian]="${deps[ubuntu]}"
 deps[fedora]="git curl wget man-pages"
-deps[arch]="git curl wget man-pages man-db"
+deps[arch]="base-devel git curl wget man-pages man-db"
 deps[darwin]=''
 
 #installing the base pacakges based on the distro choice
@@ -549,13 +549,17 @@ fonts_darwin=(
     "font-meslo-lg-nerd-font"
 )
 
-ubuntuEza() {
+ubuntuEza(){
     sudo mkdir -p /etc/apt/keyrings
     wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/gierens.gpg
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
     sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
     sudo apt update
     sudo apt install -y eza
+}
+
+fedoraBase(){
+    sudo dnf groupinstall -y "Development Tools"
 }
 
 install_yay() {
@@ -618,8 +622,9 @@ case "$DISTRO" in
         installList fonts_ubuntu
         ;;
     fedora)
-        printList cli_common
-        breakage
+    fedoraBase
+    printList cli_common
+    breakage
         installList cli_common
 
         printList cli_fedora
