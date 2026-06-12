@@ -39,10 +39,10 @@ I got tired of spending the first few hours on any new machine just getting my e
 
 | Distro | Status |
 | :--- | :--- |
-| **Arch Linux** + derivatives (Manjaro, EndeavourOS, etc.) | ✅ Fully supported | 
-| **Ubuntu / Debian** + derivatives | ✅ Supported |
-| **Fedora** + derivatives | ✅ Supported |
-| **macOS** | ✅ Supported |
+| **Arch Linux** + derivatives (Manjaro, EndeavourOS, etc.) | Fully supported | 
+| **Ubuntu / Debian** + derivatives | Supported |
+| **Fedora** + derivatives | Supported |
+| **macOS** | Supported |
 
 ---
 
