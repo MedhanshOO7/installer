@@ -669,57 +669,61 @@ fi
 
 configs=()
 
-#Filling up the configs to copy
-## top-level dotfiles
-for item in "$DOTFILES_DIR"/.[^.]*; do
-    name=$(basename "$item")
+configSetup() {
 
-    [[ "$name" == ".config" ]] && continue
-    [[ "$name" == ".git" ]] && continue
-    [[ "$name" == ".gitignore" ]] && continue
+    #Filling up the configs to copy
+    ## top-level dotfiles
+    for item in "$DOTFILES_DIR"/.[^.]*; do
+        name=$(basename "$item")
 
-    configs+=("$item")
-done
+        [[ "$name" == ".config" ]] && continue
+        [[ "$name" == ".git" ]] && continue
+        [[ "$name" == ".gitignore" ]] && continue
 
-# Contents of .config
-for item in "$DOTFILES_DIR"/.config/*; do
-    name=$(basename "$item")
+        configs+=("$item")
+    done
 
-    case "$name" in
-        hypr | kdeglobals | kglobalshortcutsrc | konsolerc | Kvantum | kwinrc | kwinrulesrc | plasma-org.kde.plasma.desktop-appletsrc | plasmashellrc | systemsettingsrc)
-            continue
-            ;;
-    esac
+    # Contents of .config
+    for item in "$DOTFILES_DIR"/.config/*; do
+        name=$(basename "$item")
 
-    configs+=("$item")
-done
+        case "$name" in
+            hypr | kdeglobals | kglobalshortcutsrc | konsolerc | Kvantum | kwinrc | kwinrulesrc | plasma-org.kde.plasma.desktop-appletsrc | plasmashellrc | systemsettingsrc)
+                continue
+                ;;
+        esac
 
-#Printing them
-for i in "${!configs[@]}"; do
-    printf "%2d) %s\n" \
-        "$((i + 1))" \
-        "$(basename "${configs[i]}")"
-done
+        configs+=("$item")
+    done
 
-# read
-read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
+    #Printing them
+    for i in "${!configs[@]}"; do
+        printf "%2d) %s\n" \
+            "$((i + 1))" \
+            "$(basename "${configs[i]}")"
+    done
 
-backup_if_exists() {
-    local target="$1"
+    # read
+    read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
 
-    if [[ -e "$target" || -L "$target" ]]; then
-        local timestamp
-        timestamp=$(date +%Y%m%d-%H%M%S)
+    backup_if_exists() {
+        local target="$1"
 
-        local backup="${target}.${timestamp}.backup"
+        if [[ -e "$target" || -L "$target" ]]; then
+            local timestamp
+            timestamp=$(date +%Y%m%d-%H%M%S)
 
-        echo "Backing up:"
-        echo "  $target"
-        echo "→ $backup"
+            local backup="${target}.${timestamp}.backup"
 
-        mv "$target" "$backup"
-    fi
+            echo "Backing up:"
+            echo "  $target"
+            echo "→ $backup"
+
+            mv "$target" "$backup"
+        fi
+    }
 }
+configSetup
 
 install_item() {
     local src="$1"
@@ -734,14 +738,16 @@ install_item() {
     echo "Installed: $dest"
 }
 
-for choice in "${choices[@]}"; do
-    src="${configs[$((choice - 1))]}"
+installAll() {
+    for choice in "${choices[@]}"; do
+        src="${configs[$((choice - 1))]}"
 
-    [[ -e "$src" ]] || continue
+        [[ -e "$src" ]] || continue
 
-    install_item "$src"
-done
-
+        install_item "$src"
+    done
+}
+installAll
 # symlink "$DOTFILES_DIR/.zshrc" "${HOME}/.zshrc"
 # symlink "$DOTFILES_DIR/.zsh" "${HOME}/.zsh"
 # symlink "$DOTFILES_DIR/.p10k.zsh" "${HOME}/.p10k.zsh"
