@@ -21,11 +21,11 @@
                         └──────────────────────────────────────────────────────┘
 ```
 
-# medAnshOO7's UNIX Setup
+# cs's UNIX 
 
 My personal *dotfiles and system* setup — built to get any machine feeling like home as fast as possible. One script, batteries included.
 
-## 📌 Overview
+## Overview
 
 **What's this?**  
 This is everything I use day-to-day: shell config, editor setup, fonts, CLI tools, GUI apps, the whole thing. Clone it on a fresh machine, run the script, grab a coffee, done. It is managed with a git repo so files live directly in `$HOME` with no extra tooling needed.
@@ -46,7 +46,7 @@ I got tired of spending the first few hours on any new machine just getting my e
 
 ---
 
-## 📦 What Gets Installed
+## What Gets Installed
 
 - **CLI Tools:** `neovim`, `vim`, `tmux`, `fzf`, `ripgrep`, `bat`, `eza`, `btop`, `fastfetch`, `zoxide`, `glow`, `tldr`, and more.
 - **Shell:** `zsh` + `oh-my-zsh`, `powerlevel10k`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf-tab`.
@@ -56,9 +56,9 @@ I got tired of spending the first few hours on any new machine just getting my e
 
 ---
 
-## 🚀 Installation
+## Installation
 
-⚠️ **Prerequisites:** Make sure **`git`** and **`curl`** are installed on your system before proceeding.
+**Prerequisites:** Make sure **`git`** and **`curl`** are installed on your system before proceeding.
 
 ### 1. One-Line Install
 
@@ -88,7 +88,7 @@ curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.
 
 ---
 
-## ⚙️ Useful Options
+## Useful Options
 
 You can append options to the script to modify its behavior:
 
