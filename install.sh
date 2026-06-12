@@ -58,9 +58,22 @@ cat <<'EOF'
 └──────────────────────────────────────────────────────┘
 EOF
 
-if [[ "${1:-}" == "--debug" ]]; then
-    set -x
-fi
+INSTALL_ALL=0
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --debug)
+            set -x
+            shift
+            ;;
+        -a|--all)
+            INSTALL_ALL=1
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 # get the uname first and then `cat /etc/os-release`
 OS_VAR="$(uname)" #this variable will be either Linux or Darwin
@@ -168,10 +181,14 @@ installList() {
         return
     fi
 
-    read -r -t 60 -p $'\nExclude numbers or Enter for all: ' excludes || {
-        printf '\nno input, installing all......\n'
+    if [[ $INSTALL_ALL -eq 1 ]]; then
         excludes=""
-    }
+    else
+        read -r -t 60 -p $'\nExclude numbers or Enter for all: ' excludes || {
+            printf '\nno input, installing all......\n'
+            excludes=""
+        }
+    fi
 
     for i in "${!pkg_list[@]}"; do
         pkg="${pkg_list[$i]}"
@@ -196,7 +213,9 @@ installList() {
 breakage() {
     printf '\n=============================\n'
     printf 'Packages will be installed.\n'
-    read -r -t 60 -p 'Press ENTER to continue or Ctrl+C to exit.....' || true
+    if [[ $INSTALL_ALL -eq 0 ]]; then
+        read -r -t 60 -p 'Press ENTER to continue or Ctrl+C to exit.....' || true
+    fi
     printf '\n'
 }
 
@@ -231,11 +250,14 @@ fi
 # zsh dependencies
 zshInstall() {
     while true; do
-
-        read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
-            printf '\nNo input or timeout, skipping...\n'
-            break
-        }
+        if [[ $INSTALL_ALL -eq 1 ]]; then
+            zsh_choice="y"
+        else
+            read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
+                printf '\nNo input or timeout, skipping...\n'
+                break
+            }
+        fi
 
         case "$zsh_choice" in
             [Yy] | [Yy][Ee][Ss])
@@ -296,11 +318,15 @@ zshInstall
 # set it to default shell
 zshDefault() {
     while true; do
+        if [[ $INSTALL_ALL -eq 1 ]]; then
+            toSet="y"
+        else
+            read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
+                printf '\nNo input or timeout, skipping...\n'
+                break
+            }
+        fi
 
-        read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
-            printf '\nNo input or timeout, skipping...\n'
-            break
-        }
         case "$toSet" in
             [Yy] | [Yy][Ee][Ss])
                 if ! command -v zsh >/dev/null; then
@@ -703,8 +729,15 @@ configSetup() {
             "$(basename "${configs[i]}")"
     done
 
-    # read
-    read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
+    if [[ $INSTALL_ALL -eq 1 ]]; then
+        choices=()
+        for i in "${!configs[@]}"; do
+            choices+=("$((i + 1))")
+        done
+    else
+        # read
+        read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
+    fi
 
     backup_if_exists() {
         local target="$1"
