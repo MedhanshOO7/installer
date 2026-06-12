@@ -31,6 +31,7 @@
 #shopts
 set -euo pipefail
 PS4='\n[DEBUG] ${LINENO} :- '
+trap 'printf "\n[!] User interrupted. Skipping to next step...\n"' SIGINT
 
 ####################PART-A###########################################
 #Ascii art (Generated using my c program)
@@ -185,6 +186,11 @@ installList() {
         excludes=""
     else
         read -r -t 60 -p $'\nExclude numbers or Enter for all: ' excludes || {
+            local rc=$?
+            if [[ $rc -eq 130 ]]; then
+                printf '\nSkipping list...\n'
+                return
+            fi
             printf '\nno input, installing all......\n'
             excludes=""
         }
@@ -214,7 +220,7 @@ breakage() {
     printf '\n=============================\n'
     printf 'Packages will be installed.\n'
     if [[ $INSTALL_ALL -eq 0 ]]; then
-        read -r -t 60 -p 'Press ENTER to continue or Ctrl+C to exit.....' || true
+        read -r -t 60 -p 'Press ENTER to continue or Ctrl+C to skip.....' || true
     fi
     printf '\n'
 }
@@ -254,7 +260,12 @@ zshInstall() {
             zsh_choice="y"
         else
             read -r -t 30 -p "Do you want to install zsh and its plugins? [y/N] " zsh_choice || {
-                printf '\nNo input or timeout, skipping...\n'
+                local rc=$?
+                if [[ $rc -eq 130 ]]; then
+                    printf '\nUser interrupted, skipping zsh...\n'
+                else
+                    printf '\nNo input or timeout, skipping...\n'
+                fi
                 break
             }
         fi
@@ -322,7 +333,12 @@ zshDefault() {
             toSet="y"
         else
             read -r -t 30 -p "Do you want to set zsh as your default shell? [y/N] " toSet || {
-                printf '\nNo input or timeout, skipping...\n'
+                local rc=$?
+                if [[ $rc -eq 130 ]]; then
+                    printf '\nUser interrupted, skipping...\n'
+                else
+                    printf '\nNo input or timeout, skipping...\n'
+                fi
                 break
             }
         fi
@@ -736,7 +752,13 @@ configSetup() {
         done
     else
         # read
-        read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices
+        read -rp "Select the configs to install (1,2,3,4....)>_ " -a choices || {
+            local rc=$?
+            if [[ $rc -eq 130 ]]; then
+                printf '\nUser interrupted, skipping configs...\n'
+                choices=()
+            fi
+        }
     fi
 
     backup_if_exists() {
