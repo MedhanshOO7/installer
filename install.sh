@@ -673,7 +673,7 @@ DOTFILES_REPO="https://github.com/MedhanshOO7/dotfiles.git"
 # clone or update
 if [[ -d "$DOTFILES_DIR" ]]; then
     printf 'Dotfiles already exist, pulling latest...\n'
-    git -C "$DOTFILES_DIR" pull
+    git -C "$DOTFILES_DIR" pull || printf 'Failed to pull latest dotfiles. Continuing anyway...\n'
 else
     printf 'Cloning dotfiles...\n'
     git clone --depth=1 "$DOTFILES_REPO" "$DOTFILES_DIR"
