@@ -39,10 +39,10 @@ I got tired of spending the first few hours on any new machine just getting my e
 
 | Distro | Status |
 | :--- | :--- |
-| **Arch Linux** + derivatives (Manjaro, EndeavourOS, etc.) | Fully supported | 
-| **Ubuntu / Debian** + derivatives | Supported |
-| **Fedora** + derivatives | Supported |
-| **macOS** | Supported |
+| **Arch Linux** + derivatives (Manjaro, EndeavourOS, etc.) |✅ Fully supported | 
+| **Ubuntu / Debian** + derivatives |✅ Supported |
+| **Fedora** + derivatives |✅ Supported |
+| **macOS** |✅ Supported |
 
 ---
 
@@ -92,6 +92,16 @@ curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.
 
 You can append options to the script to modify its behavior:
 
+- **Automate installation (bypass interactive prompts):**
+  ```bash
+  bash installer/install.sh --all
+  # or
+  bash installer/install.sh -a
+
+  # Or via curl:
+  curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --all
+  ```
+
 - **Enable debug logging:**
   ```bash
   bash installer/install.sh --debug
@@ -99,3 +109,4 @@ You can append options to the script to modify its behavior:
   # Or via curl:
   curl -fsSL https://raw.githubusercontent.com/MedhanshOO7/installer/main/install.sh | bash -s -- --debug
   ```
+
